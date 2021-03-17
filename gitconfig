@@ -1,0 +1,21 @@
+[user]
+        name = Bob Ternosky
+        email = bob@ternosky.net
+
+[alias]
+        lol = log --graph --decorate --pretty=oneline --abbrev-commit
+        lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+[push]
+        default = simple
+
+[color]
+        ui = true
+        branch = auto
+        diff = auto
+        interactive = auto
+        status = auto
+
+[core]
+        excludesfile = /home/rternosky/.gitignore
+        whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+        trustctime = false
