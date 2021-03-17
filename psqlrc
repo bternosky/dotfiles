@@ -1,0 +1,8 @@
+\timing
+\set AUTOCOMMIT off
+\set ON_ERROR_ROLLBACK on
+\echo 'AUTOCOMMIT is' :AUTOCOMMIT
+\pset pager off
+\set PROMPT1 '%n@%M.%/%R%# '
+\set HISTFILE ~/.psql_history- :HOST - :DBNAME
+\set HISTSIZE 5000
