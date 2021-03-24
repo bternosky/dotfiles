@@ -58,7 +58,7 @@ fi
 ################################################
 # SSH Keychain
 ################################################
-/usr/bin/keychain $HOME/.ssh/id_rsa
+/usr/bin/keychain $HOME/.ssh/id_ed25519
 source $HOME/.keychain/$HOSTNAME-sh
 
 ################################################
