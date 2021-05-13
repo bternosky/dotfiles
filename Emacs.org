@@ -19,7 +19,7 @@ These can also be used in longer combinations such as:
 * Emacs UI General Settings
 This section contains a number of tweaks to basic emacs looks and functions. These don't depend on anything external.
 
-** Genreal Tweaks
+** General Tweaks
 Here are my general emacs UI tweaks with commentary in line.
 NOTE: setq is a global variable, setq-default is the default value for a buffer-local variable.
 
@@ -42,6 +42,8 @@ NOTE: setq is a global variable, setq-default is the default value for a buffer-
 ;;(set-face-background 'hl-line "#222")     ; change color of hilight line if desired
 (setq-default indent-tabs-mode nil)       ; indent with spaces, not tabs
 (setq standard-indent 4)                  ; default to 4 spaces indent
+(setq create-lockfiles nil)               ; Don't create lockfiles
+(setq read-process-output-max (* 1024 1024)) ; 1mb -useful for LSP which reads a lot
 #+end_src
 
 ** Unicode support in modes
@@ -87,7 +89,6 @@ We want to add line numbers to MOST buffers. We will add it globally, then turn 
 ;; ------------------------------------------------------------------------------------------------
 ;; Enable Line Number mode - on ALL modes except specific modes
 ;; ------------------------------------------------------------------------------------------------
-
 (global-display-line-numbers-mode t)         ;; enable line numbers for ALL buffers/modes
 
 ;; Disable line numbers for the following list of modes
@@ -474,9 +475,12 @@ In addition to installing projectile we also:
   ;; NOTE: Set this to the folder(s) where you keep your Git repos. It expects everything in that
   ;;       folder to be a git repo or other project types (mercurial and other things work too)
   ;; NOTE: using ~/src/git doesn't work for me - I pushed stuff down a level. So I have to list ALL
-  ;;       subdirectories I want
-  (setq projectile-project-search-path '("~/src/git/NG"
-                                         "~/src/git/NUCLEUS"))
+  ;; subdirectories I want
+  (setq projectile-project-search-path '("~/src/"))
+
+  ;; Enable caching for speed
+  (setq projectile-enable-caching t)
+
   ;; when switching project open dired buffer automatically
   (setq projectile-switch-project-action #'projectile-dired))
 
@@ -819,8 +823,8 @@ The config for all of the above:
 
 ;; Set Refile target(s)
 (setq org-refile-targets
-    '(("Archive.org" :maxlevel . 1)
-      ("Tasks.org" :maxlevel . 1)))
+    '(("~/Org/Archive.org" :maxlevel . 1)
+      ("~/Org/Tasks.org" :maxlevel . 1)))
 
 ;; Refile doesn't save automatically. Tell Emacs to do so!
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
@@ -975,6 +979,37 @@ Org tree slide has a few built-in profiles.
 | M-x org-tree-slide-simple-profile       | No header, no breadcrumb                  |
 | M-x org-tree-slide-presentation-profile | The default presentation, COMMENT skipped |
 | M-x org-tree-slide-narrowing-profile    | only shows TODO/COMMENT, authoring mode   |
+
+* Markdown mode
+Markdown is a very common document format. Emacs, of course, has a
+mode for viewing/editing Markdown.
+** Config
+#+begin_src emacs-lisp
+;; ------------------------------------------------------------------------------------------------
+;; Package: markdown-mode
+;;   - Markdown editing mode
+;;
+;; https://www.emacswiki.org/emacs/MarkdownMode
+;; ------------------------------------------------------------------------------------------------
+(use-package markdown-mode
+  :ensure t
+  :mode "\\.md\\'"
+  :config
+  (setq markdown-command "marked")
+  ;; Adjust font-faces for various headings
+  (defun my/set-markdown-header-font-sizes ()
+    (dolist (face '((markdown-header-face-1 . 1.2)
+                    (markdown-header-face-2 . 1.1)
+                    (markdown-header-face-3 . 1.0)
+                    (markdown-header-face-4 . 1.0)
+                    (markdown-header-face-5 . 1.0)))
+      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+
+  (defun my/markdown-mode-hook ()
+    (my/set-markdown-header-font-sizes))
+
+(add-hook 'markdown-mode-hook 'my/markdown-mode-hook))
+#+end_src
 
 * Programming Support
 This is obviously the meat of the config to turn Emacs into a modern IDE.
@@ -1255,6 +1290,18 @@ YAML config is simple:
 ;; ------------------------------------------------------------------------------------------------
 (use-package yaml-mode
   :mode "\\.ya?ml\\'")
+#+end_src
+
+*** Docker
+When using docker it helps to use [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]:
+
+#+begin_src emacs-lisp
+;; -----------------------------------------------------------------------------------------------
+;; Package: dockerfile-mode
+;;   -- Dockerfile support
+;; https://github.com/spotify/dockerfile-mode
+;; -----------------------------------------------------------------------------------------------
+(use-package dockerfile-mode)
 #+end_src
 
 ** Improved code checking/linting for Python
