@@ -16,10 +16,25 @@ These can also be used in longer combinations such as:
 - "C-c d" => "CTRL+c" then "d" without the CTRL
 - "M-x some-emacs-function-name" => "Meta+x", then when the mini-buffer opens, type: "some-emacs-function-name"
 
+* Performance Tuning (Optional)
+To speed Emacs load times it helps to know how long it takes it to load and how much garbage collection is happening. The following function will display load time in status bar and the \*Messages\* buffer. You can remote/comment out if not needed.
+
+#+begin_src emacs-lisp
+;;------------------------------------------------------------------------------------------------
+;; Show load time in status bar and Messages buffer
+;; ------------------------------------------------------------------------------------------------
+(defun my/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                     (time-subtract after-init-time before-init-time)))
+           gcs-done))
+(add-hook 'emacs-startup-hook #'my/display-startup-time)
+#+end_src
 * Emacs UI General Settings
 This section contains a number of tweaks to basic emacs looks and functions. These don't depend on anything external.
 
-** General Tweaks
+** General UI/Behavior Tweaks
 Here are my general emacs UI tweaks with commentary in line.
 NOTE: setq is a global variable, setq-default is the default value for a buffer-local variable.
 
@@ -27,22 +42,22 @@ NOTE: setq is a global variable, setq-default is the default value for a buffer-
 ;;------------------------------------------------------------------------------------------------
 ;; General Emacs Configuration
 ;; ------------------------------------------------------------------------------------------------
-(defvar my/default-font-size 110)         ; Default font size, 10*font px size seems to work
-(setq inhibit-splash-screen t)            ; Turn off splash screen
-(setq inhibit-startup-message t)          ; Turn off start up message
-(setq initial-scratch-message nil)        ; no message in scratch buffers
-(setq-default fill-column 100)            ; default 100 chars before wrapping
-;(scroll-bar-mode -1)                      ; Disable visible scroll bar
-(tool-bar-mode -1)                        ; Disable the toolbar
-(tooltip-mode -1)                         ; Disable tooltips
-(set-fringe-mode 10)                      ; Add 10px white space around the edges
-;;(menu-bar-mode -1)                        ; Disable the menu bar
-(setq visible-bell t)                     ; use flashes instead of beeps for feedback
-(global-hl-line-mode 1)                   ; highlight the current line
-;;(set-face-background 'hl-line "#222")     ; change color of hilight line if desired
-(setq-default indent-tabs-mode nil)       ; indent with spaces, not tabs
-(setq standard-indent 4)                  ; default to 4 spaces indent
-(setq create-lockfiles nil)               ; Don't create lockfiles
+(defvar my/default-font-size 110)            ; Default font size, 10*font px size seems to work
+(setq inhibit-splash-screen t)               ; Turn off splash screen
+(setq inhibit-startup-message t)             ; Turn off start up message
+(setq initial-scratch-message nil)           ; no message in scratch buffers
+(setq-default fill-column 100)               ; default 100 chars before wrapping
+;(scroll-bar-mode -1)                         ; Disable visible scroll bar
+(tool-bar-mode -1)                           ; Disable the toolbar
+(tooltip-mode -1)                            ; Disable tooltips
+(set-fringe-mode 10)                         ; Add 10px white space around the edges
+;(menu-bar-mode -1)                           ; Disable the menu bar
+(setq visible-bell t)                        ; use flashes instead of beeps for feedback
+(global-hl-line-mode 1)                      ; highlight the current line
+;(set-face-background 'hl-line "#222")        ; change color of hilight line if desired
+(setq-default indent-tabs-mode nil)          ; indent with spaces, not tabs
+(setq standard-indent 4)                     ; default to 4 spaces indent
+(setq create-lockfiles nil)                  ; Don't create lockfiles
 (setq read-process-output-max (* 1024 1024)) ; 1mb -useful for LSP which reads a lot
 #+end_src
 
@@ -176,6 +191,7 @@ This section only tells emacs to download/install the mode. It does nothing else
 ;;   Toggle the window on/off - execute this: META+X clm/toggle-command-log-buffer
 ;; ------------------------------------------------------------------------------------------------
 (use-package command-log-mode
+  :commands command-log-mode    ; only load when invoked by command
   :ensure t)
 #+end_src
 
@@ -230,7 +246,7 @@ Here we add a date/time widget to the modeline and control it's format.
 ** Add Column number to the modeline
 #+begin_src emacs-lisp
 ;; Add column number to the modeline
-(column-number-mode)                         ;; enable column #
+(column-number-mode)                         ; enable column #
 #+end_src
 
 ** Augment the modeline with the doom-modeline package
