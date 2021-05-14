@@ -777,9 +777,19 @@ First we define the languages that we look for in code blocks that use the "begi
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)  ; add unix config files to the languages list
 
-;; XXX - would like to add org-tempo and structured template blocks but we need version 9.2 with Emacs 27 to make that work
+; Add Structured Templates to Org
+; NOTE: This requires Org 9.2+ and Emacs 27+
 ;;   see https://www.youtube.com/watch?v=kkqVTDbfYp4 12:00 minute mark
 ;;   keybinds for inserting blocks for code
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+(add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("go" . "src go"))
+(add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+(add-to-list 'org-structure-template-alist '("json" . "src json"))
 #+end_src
 
 Next we setup a block of code that uses org-babel-tangle to write out the code blocks of ~/Org/Emacs.org to ~/Org/init.el as defined in line #2 of this document defined by the PROPERTY line starting with #+:
