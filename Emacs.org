@@ -764,19 +764,24 @@ Next we'll install two packages:
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
 
-*** Code Execution from with org-mode
+*** Code Execution from within org-mode
 We can utilize Org mode to manage configuration files (for example this file). Using *org-babel* we can write a fully documented file in Org with nice formatting and utilize it's code execution capabilities to  take blocks of the document and write out just those block  to a file (or set of files).
 
 First we define the languages that we look for in code blocks that use the "begin_src/end_src" markers:
 #+begin_src emacs-lisp
 ;; org-babel can be used to execute code in Org files with C-c C-c (needed for tangle - writing out to a file)
-(org-babel-do-load-languages                          ; define languages we can use org-babel on (execute from org block)
-  'org-babel-load-languages
-  '((emacs-lisp . t)                                  ; Lisp + Python
-    (python . t)))
+(with-eval-after-load 'org
+  (org-babel-do-load-languages                          ; define languages we can use org-babel on (execute from org block)
+      'org-babel-load-languages
+      '((emacs-lisp . t)                                  ; Lisp + Python
+      (python . t)))
 
-(push '("conf-unix" . conf-unix) org-src-lang-modes)  ; add unix config files to the languages list
+  (push '("conf-unix" . conf-unix) org-src-lang-modes))  ; add unix config files to the languages list
+#+end_src
 
+*** Structured Templates
+Org Mode's structured templates allow for quick code block insertion to an Org file. To use this feature type =<= followed by the template name (e.g. =py= for python, =el= for emacs-lisp) then the =TAB= key.
+#+begin_src emacs-lisp
 ; Add Structured Templates to Org
 ; NOTE: This requires Org 9.2+ and Emacs 27+
 ;;   see https://www.youtube.com/watch?v=kkqVTDbfYp4 12:00 minute mark
