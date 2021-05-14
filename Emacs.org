@@ -31,6 +31,66 @@ To speed Emacs load times it helps to know how long it takes it to load and how 
            gcs-done))
 (add-hook 'emacs-startup-hook #'my/display-startup-time)
 #+end_src
+
+** Speeding up Emacs
+If you enable logging on startup (via "use-package-verbose t)" ), the Messages buffer shows all your package loads and configuration. Before we tuned the loads this was the output:
+#+begin_src
+Loading package all-the-icons...done
+Loading package doom-modeline...done
+Loading package which-key...
+Configuring package which-key...done
+Loading package which-key...done
+Loading package swiper...done
+Configuring package ivy...done
+Configuring package counsel...done
+Loading package ivy-prescient...
+Configuring package ivy-prescient...done
+Loading package ivy-prescient...done
+Loading package ivy-rich...done
+Loading package doom-themes...done
+Loading package counsel-projectile...
+Configuring package projectile...done (0.130s)
+Configuring package counsel-projectile...done
+Loading package counsel-projectile...done (0.175s)
+Loading package magit...done (0.243s)
+Configuring package org...done (0.276s)
+Loading package lsp-ivy...
+Configuring package markdown-mode...done
+Configuring package lsp-mode...done
+Loading package lsp-ivy...done (0.102s)
+Loading package lsp-python-ms...done
+Loading package dockerfile-mode...done
+Loading package flycheck...done
+Loading package pyvenv...
+Configuring package pyvenv...done
+Loading package pyvenv...done
+Loading package hydra...done
+Turning on magit-auto-revert-mode...done
+For information about GNU Emacs and the GNU system, type C-h C-a.
+Emacs loaded in 2.03 seconds with 36 garbage collections.
+#+end_src
+
+We should be able to make loading faster by stopping the following:
+- which-key
+- swiper
+- ivy
+- counsel
+- ivy-prescient
+- ivy-rich
+- counsel-projectile
+- projectile
+- magit
+- org
+- makdown-mode
+- lsp-mode
+- lsp-ivy
+- lsp-python-ms
+- dockerfile-mode
+- flycheck
+- pyvenv
+- hydra
+- magit-auto-revert-mode
+
 * Emacs UI General Settings
 This section contains a number of tweaks to basic emacs looks and functions. These don't depend on anything external.
 
@@ -173,7 +233,7 @@ The options also control module load timing according to this table:
 
 (require 'use-package)              ; load use-package
 (setq use-package-always-ensure t)  ; adds ":ensure t" to every use-package invocation
-;(setq use-package-verbose t)        ; enable to see load/config
+(setq use-package-verbose t)        ; enable to see load/config
 #+end_src
 
 * Command Log Mode
@@ -236,8 +296,9 @@ The Emacs modeline is the line at the bottom of the screen that displays some in
 Here we add a date/time widget to the modeline and control it's format.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
-;; Add clock to modeline
+;; Modeline adjustments
 ;; ------------------------------------------------------------------------------------------------
+;; add clock
 (setq display-time-24hr-format t)             ; clock should be a 24 Hr clock format
 (setq display-time-format "%H:%M - %d %b %Y") ; format of clock date/time
 (display-time-mode 1)                         ; enable clock for all buffers
@@ -245,11 +306,11 @@ Here we add a date/time widget to the modeline and control it's format.
 
 ** Add Column number to the modeline
 #+begin_src emacs-lisp
-;; Add column number to the modeline
-(column-number-mode)                         ; enable column #
+; add column number
+(column-number-mode)
 #+end_src
 
-** Augment the modeline with the doom-modeline package
+** Use doom-modeline
 The [[https://github.com/seagle0128/doom-modeline][doom-modeline]] package adds a wealth of information in terms of indicators in the modeline and hooks in with other modules e.g. flycheck, python-mode, LSP to add status indicators.
 
 *** doom-modeline
@@ -277,9 +338,10 @@ With certain command in Emacs (e.g. M-x) the mini-buffer will open up and show a
 ;; ------------------------------------------------------------------------------------------------
 (use-package which-key
   :ensure t
-  :init (which-key-mode)               ; always run mode when loaded
+  :defer 0                             ; don't load until startup completes
   :diminish which-key-mode
   :config
+  (which-key-mode)                     ; always run mode when loaded
   (setq which-key-idle-delay 0.3))     ; wait for 0.3 secs after typing stops
 #+end_src
 
