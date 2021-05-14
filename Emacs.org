@@ -70,7 +70,7 @@ For information about GNU Emacs and the GNU system, type C-h C-a.
 Emacs loaded in 2.03 seconds with 36 garbage collections.
 #+end_src
 
-We should be able to make loading faster by stopping the following:
+We should be able to make loading faster by stopping the following from loading during start:
 - which-key
 - swiper
 - ivy
@@ -481,6 +481,7 @@ The [[https://github.com/Yevgnen/ivy-rich][ivy-rich]] package will be used to ad
 ;; ------------------------------------------------------------------------------------------------
 (use-package ivy-rich
   :ensure t
+  :after ivy
   :init
   (ivy-rich-mode 1))                            ; run mode on load
 #+end_src
@@ -497,6 +498,7 @@ The configuration below binds the new helpful describe-xxx methods when you use 
 ;; ------------------------------------------------------------------------------------------------
 (use-package helpful
   :ensure t
+  :commands (helpful-callable helpful-variable helpful-function helpful-key)
   :custom                                                           ; set variables for Helpful
   ;; replace counsel-describe-function with helpful-callable
   ;; replace counsel-describe-variable with helpful-callable
@@ -1514,7 +1516,8 @@ The single rule we're defining is:
 ;; https://github.com/abo-abo/hydra
 ;; ------------------------------------------------------------------------------------------------
 (use-package hydra
-  :ensure t)
+  :ensure t
+  :defer t)
 
 ;; Use F2 + j/k keys for zoom in/out
 ;; This setups means typing F2 jjkkf is equivalent to zoom in, zoom in, zoom out, zoom out, quit
