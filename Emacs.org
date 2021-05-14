@@ -783,18 +783,20 @@ First we define the languages that we look for in code blocks that use the "begi
 Org Mode's structured templates allow for quick code block insertion to an Org file. To use this feature type =<= followed by the template name (e.g. =py= for python, =el= for emacs-lisp) then the =TAB= key.
 #+begin_src emacs-lisp
 ; Add Structured Templates to Org
-; NOTE: This requires Org 9.2+ and Emacs 27+
+; NOTE: This requires Emacs 27+
 ;;   see https://www.youtube.com/watch?v=kkqVTDbfYp4 12:00 minute mark
 ;;   keybinds for inserting blocks for code
-(require 'org-tempo)
-(add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-(add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-(add-to-list 'org-structure-template-alist '("go" . "src go"))
-(add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
-(add-to-list 'org-structure-template-alist '("json" . "src json"))
+(with-eval-after-load 'org
+    ; Required as of Org 9.2
+    (require 'org-tempo)
+    (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+    (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("go" . "src go"))
+    (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+    (add-to-list 'org-structure-template-alist '("json" . "src json")))
 #+end_src
 
 Next we setup a block of code that uses org-babel-tangle to write out the code blocks of ~/Org/Emacs.org to ~/Org/init.el as defined in line #2 of this document defined by the PROPERTY line starting with #+:
