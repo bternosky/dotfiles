@@ -577,6 +577,7 @@ In addition to installing projectile we also:
 
 (use-package counsel-projectile                        ; Use counsel for projectile commands
   :ensure t
+  :after projectile
   :config (counsel-projectile-mode))
 #+end_src
 
@@ -624,7 +625,8 @@ Magit config is very simple. Just load the mode.
 ;; https://magit.vc/
 ;; ------------------------------------------------------------------------------------------------
 (use-package magit
-  :ensure t)
+  :ensure t
+  :commands magit-status)
 #+end_src
 
 ** Usage
@@ -749,6 +751,7 @@ Next we'll install two packages:
 #+begin_src emacs-lisp
 (use-package org                                  ; Setup actual org-mode
   :ensure t
+  :commands (org-capture org-agenda)              ; load org for these commands even if not using .org file
   :hook (org-mode . my/org-mode-setup)            ; use our function for org-mode behaviors
   :config
   ;; Change "..." on section headers when collapsed to Unicode down arrow
@@ -1088,37 +1091,6 @@ Org tree slide has a few built-in profiles.
 | M-x org-tree-slide-presentation-profile | The default presentation, COMMENT skipped |
 | M-x org-tree-slide-narrowing-profile    | only shows TODO/COMMENT, authoring mode   |
 
-* Markdown mode
-Markdown is a very common document format. Emacs, of course, has a
-mode for viewing/editing Markdown.
-** Config
-#+begin_src emacs-lisp
-;; ------------------------------------------------------------------------------------------------
-;; Package: markdown-mode
-;;   - Markdown editing mode
-;;
-;; https://www.emacswiki.org/emacs/MarkdownMode
-;; ------------------------------------------------------------------------------------------------
-(use-package markdown-mode
-  :ensure t
-  :mode "\\.md\\'"
-  :config
-  (setq markdown-command "marked")
-  ;; Adjust font-faces for various headings
-  (defun my/set-markdown-header-font-sizes ()
-    (dolist (face '((markdown-header-face-1 . 1.2)
-                    (markdown-header-face-2 . 1.1)
-                    (markdown-header-face-3 . 1.0)
-                    (markdown-header-face-4 . 1.0)
-                    (markdown-header-face-5 . 1.0)))
-      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
-
-  (defun my/markdown-mode-hook ()
-    (my/set-markdown-header-font-sizes))
-
-(add-hook 'markdown-mode-hook 'my/markdown-mode-hook))
-#+end_src
-
 * Programming Support
 This is obviously the meat of the config to turn Emacs into a modern IDE.
 
@@ -1212,7 +1184,8 @@ Packages:
 ;; run M-x lsp-ivy-workspace-symbol to search for a symbol in project
 ;;     and it has an improved interface
 (use-package lsp-ivy
-  :ensure t)
+  :ensure t
+  :after lsp)
 #+end_src
 
 *** Usage
@@ -1280,6 +1253,7 @@ This config can download and install the MS LSP, hook it into python-mode and it
 ;; ------------------------------------------------------------------------------------------------
 (use-package lsp-python-ms
   :ensure t
+  :after lsp
   :init (setq lsp-python-ms-auto-install-server t) ; force install of MS Python server
   :hook (python-mode . (lambda ()                  ; require the MS LSP when using python-mode
                          (require 'lsp-python-ms)
@@ -1333,7 +1307,7 @@ The packages:
 ;; ------------------------------------------------------------------------------------------------
 (use-package company
   :ensure t
-  :after lsp-mode                                         ; load after lsp-mode
+  :after lsp                                              ; load after lsp-mode
   :hook (lsp-mode . company-mode)                         ; hook into LSP
   :bind (:map company-active-map
          ("<tab>" . company-complete-selection))          ; use tab to do complete-selection
@@ -1409,9 +1383,41 @@ When using docker it helps to use [[https://github.com/spotify/dockerfile-mode][
 ;;   -- Dockerfile support
 ;; https://github.com/spotify/dockerfile-mode
 ;; -----------------------------------------------------------------------------------------------
-(use-package dockerfile-mode)
+(use-package dockerfile-mode
+  :ensure t
+  :defer t)
 #+end_src
 
+*** Markdown
+Markdown is a very common document format. Emacs, of course, has a
+mode for viewing/editing Markdown.
+**** Config
+#+begin_src emacs-lisp
+;; ------------------------------------------------------------------------------------------------
+;; Package: markdown-mode
+;;   - Markdown editing mode
+;;
+;; https://www.emacswiki.org/emacs/MarkdownMode
+;; ------------------------------------------------------------------------------------------------
+(use-package markdown-mode
+  :ensure t
+  :mode "\\.md\\'"
+  :config
+  (setq markdown-command "marked")
+  ;; Adjust font-faces for various headings
+  (defun my/set-markdown-header-font-sizes ()
+    (dolist (face '((markdown-header-face-1 . 1.2)
+                    (markdown-header-face-2 . 1.1)
+                    (markdown-header-face-3 . 1.0)
+                    (markdown-header-face-4 . 1.0)
+                    (markdown-header-face-5 . 1.0)))
+      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+
+  (defun my/markdown-mode-hook ()
+    (my/set-markdown-header-font-sizes))
+
+(add-hook 'markdown-mode-hook 'my/markdown-mode-hook))
+#+end_src
 ** Improved code checking/linting for Python
 The syntax checker in python-mode is pretty basic. We'll add the [[https://www.flycheck.org/en/latest/][flycheck]] package for better syntax checking:
 
@@ -1422,6 +1428,7 @@ The syntax checker in python-mode is pretty basic. We'll add the [[https://www.f
 ;; https://www.flycheck.org/en/latest/
 ;; ------------------------------------------------------------------------------------------------
 (use-package flycheck
+  :after lsp
   :ensure t)
 (add-hook 'python-mode-hook 'flycheck-mode)              ; add it to python-mode
 #+end_src
@@ -1449,6 +1456,7 @@ Pyvenv is a simple config:
 ;; ------------------------------------------------------------------------------------------------
 (use-package pyvenv
   :ensure t
+  :after python-mode
   :config
   (pyvenv-mode 1))                       ; enable mode immediately
 #+end_src
