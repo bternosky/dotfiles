@@ -71,10 +71,6 @@ Emacs loaded in 2.03 seconds with 36 garbage collections.
 #+end_src
 
 We should be able to make loading faster by stopping the following from loading during start:
-- which-key
-- swiper
-- ivy
-- counsel
 - ivy-prescient
 - ivy-rich
 - counsel-projectile
@@ -90,6 +86,24 @@ We should be able to make loading faster by stopping the following from loading 
 - pyvenv
 - hydra
 - magit-auto-revert-mode
+
+After tweaking we reduced load messages to:
+#+begin_src
+Loading package all-the-icons...done
+Loading package doom-modeline...done
+Loading package swiper...done
+Configuring package ivy...done
+Configuring package counsel...done
+Loading package ivy-prescient...
+Configuring package ivy-prescient...done
+Loading package ivy-prescient...done
+Loading package ivy-rich...done
+Loading package doom-themes...done
+For information about GNU Emacs and the GNU system, type C-h C-a.
+Emacs loaded in 0.92 seconds with 26 garbage collections.
+#+end_src
+
+We cut load time in half and saved a bunch on memory usage as well.
 
 * Emacs UI General Settings
 This section contains a number of tweaks to basic emacs looks and functions. These don't depend on anything external.
@@ -233,7 +247,7 @@ The options also control module load timing according to this table:
 
 (require 'use-package)              ; load use-package
 (setq use-package-always-ensure t)  ; adds ":ensure t" to every use-package invocation
-(setq use-package-verbose t)        ; enable to see load/config
+;(setq use-package-verbose t)        ; enable to see load/config
 #+end_src
 
 * Command Log Mode
