@@ -1737,12 +1737,14 @@ screen horizontally and the new window will open in the bottom half.  The first 
 (display-buffer (get-buffer-create "scratch"))
 (display-buffer (get-buffer-create "Test!"))
 #+end_src
+
 ** Using display-buffer "action functions"
 An "action function" tells display buffer how to control buffer creation. The signature is:
 #+begin_src
 (display-buffer-same-window BUFFER ALIST)
 #+end_src
 where *BUFFER* is the name of the buffer and *ALIST* is key/value pairs.
+
 ** Various alist keys we might want to use:
 *NOTE* in the text of the keys below, the following definitions apply:
     - Frame = "Window to the OS".
@@ -1765,6 +1767,7 @@ You can also pass a frame object to restrict to only that frame.
 
 *** inhibit-switch-frame
 Prevents a non-current frame from being "raised". if the window is placed there if the value is "t".
+
 *** mode
 Restricts window selection to those displaying buffers of a certain major mode. You can pass either
 a symbol of a major mode or a lsit of symbos representing major modes:
@@ -1801,7 +1804,7 @@ Each function is evaulted in order to determine where a new buffer gets placed.
 
 *NOTE*: Do =NOT= change this variable, =EVER!=
 
-Here is what each function does out of the box:
+Here is what each of the default functions does out of the box:
 
 *** display-buffer--maybe-same-window
 This function uses the Emacs function =same-window-p= to decide whether
@@ -1835,13 +1838,127 @@ Example:
 (display-buffer "scratch"
                 '(display-buffer-reuse-window . ((inhibit-same-window . t))))
 #+end_src
+
 *** display-buffer--maybe-pop-up-frame-or-window
 Creates a =pop-up frame= or window depending on whether =pop-up-frames= or =pop-up-windows= is
 non nil respectively. The default for =pop-up-windows= is =t=. This causes many windows to pop up in
 a separate window.
 
-- display-buffer-pop-up-frame is called when =pop-up-frames= is non-nil.
+- =display-buffer-pop-up-frame= is called when =pop-up-frames= is non-nil.
 - =display-buffer-pop-up-window= is called when =pop-up-windows= is non-nil.
+
+Example, this will pop-up a new window by default.
+#+begin_src
+(display-buffer "scratch"
+                '(display-buffer--maybe-pop-up-frame-or-window . ()))
+#+end_src
+
+However if we run =(setq pop-up-windows nil)= before we run that it will use the same window.
+
+*** display-buffer-in-previous-window
+Attempts to place the new buffer in whichever VISIBLE window it was previously open in. The rules it
+follows are:
+  - Use the window specified by any =previous-window= alist entry, provided it is NOT the selected
+    window.
+  - Use a window that showed the buffer before, provided it is not the selected window
+  - Use the selected window if it is either specified by a =previous-window= alist entry or showed before.
+
+NOTE: you can combine with =inhibit-same-window= to force to NOT use a previous or same window.
+
+*** display-buffer-use-some-window
+Find ANY usable window to place the buffer. Uses a heuristic to determine the bst window to pick.
+Skips dedicated windows, but could use something like LRU or Most-recent.
+
+This is way down the stack - kind of a catch all.
+
+*** display-buffer-pop-up-frame
+Absolute last effort. Rules prevent us from using ANY existing window. Open in a new frame.
+
+** Other placement actions
+Emacs provides other options:
+*** display-buffer-reuse-mode-window
+Re-use a window that's already showing a buffer of the same major mode as the new buffer.
+With the =mode= alist entry, you can restrict the set of major modes that apply for this.
+
+Example that would send ALL =helpful= mode output to an EXISTING window that is already showing
+ =helpful= mode.
+
+#+begin_src
+(display-buffer "helpful command: special-lispy-clone"
+                '(display-buffer-resue-mode-window . ((mode . (helpful-mode)))))
+#+end_src
+
+*** display-buffer-in-side-window
+Displays the buffer in a "side window" of the current frame. This one is particularly useful with custom
+buffer rules.
+
+Examples:
+#+begin_src
+;; open in side window w/o args = split horizontal and put in bottom half
+;; could have also used (side . bottom) instead of () argument
+(display-buffer "scratch"
+                '(display-buffer-in-side-window . ()))
+
+;; Split window in 1/2 vertically, open in right frame
+(display-buffer "scratch"
+                '(display-buffer-in-side-window . ((side . right))))
+
+;; Split window in 1/2 vertically, open in left frame
+(display-buffer "scratch"
+                '(display-buffer-in-side-window . ((side . left))))
+
+;; split window vertically, open in left frame with width of 15 characters
+(display-buffer "scratch"
+                '(display-buffer-in-side-window . ((side . left)
+                                                   (window-width . 15))))
+
+;; split window horizontally, place window on top with heigh of 5 characters
+(display-buffer "scratch"
+                '(display-buffer-in-side-window . ((side . top)
+                                                   (window-height . 5))))
+#+end_src
+
+*** display-buffer-at-bottom
+Use to force display to ALWAYS be on the bottom. Could use =display-buffer-in-side-window=
+to do the same thing.
+Example:
+#+begin_src
+(display-buffer "scratch"
+                '(display-buffer-at-bottom . ()))
+#+end_src
+
+*** display-buffer-no-window
+Never display the buffer in a window. This requires that =allow-no-window= option to be set to =t=.
+
+Example:
+#+begin_src
+(dislay-buffer "scratch"
+               '(display-buffer-no-window . ((allow-no-window . t))))
+#+end_src
+*** and more...
+There are more, see the Buffer Display Action Functions section of the Emacs Lisp Manual.
+** Overriding Default behaviors
+We cannot change the =display-buffer-fallback-action= variable. Instead we will  change the
+user-customizable variable =display-buffer-base-action=.
+
+We are going to change the behavior as follows:
+  - Prefer to re-use a buffer rather than opening a new buffer (by re-ordering the default list).
+  - Use the prevous window for "helpful" windows.
+#+begin_src emacs-lisp
+(setq display-buffer-base-action
+  '((display-buffer-reuse-window
+     display-buffer-reuse-mode-window
+     display-buffer-same-window
+     display-buffer-in-previous-window)
+    . ((mode . (helpful-mode help-mode)))))
+#+end_src
+
+Now if we keep a helpful window open it will keep re-using the same window every time we use a
+=helpful= or =help= command.
+
+A future System Crafters video should show us how to:
+- force flycheck to always open on right
+- force helpful to always open on right
 
 * Arbitrary Text Scaling
 Sometimes you want to adjust text font on the fly from it's current size (e.g. pair programming,
