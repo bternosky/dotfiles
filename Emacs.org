@@ -791,11 +791,11 @@ First a function to define some styles when org-mode is in use.
 ;; https://orgmode.org/
 ;; ------------------------------------------------------------------------------------------------
 (defun my/org-mode-setup ()            ; Define a set of behaviors for org-mode:
-  (org-indent-mode)                    ;   Enable "indented" view (ie 2nd level indents from 1st)
+  (org-indent-mode t)                  ;   Enable "indented" view (ie 2nd level indents from 1st)
   (variable-pitch-mode 1)              ;   Enable proportional fonts (text unless in #+begin_src)
   (auto-fill-mode 0)                   ;   Disable automatic line wrapping on space/enter
   (visual-line-mode 1)                 ;   Enable Wrap at window boundary
-  (diminish org-indent-mode))          ;   quite down indent-mode
+  (diminish org-indent-mode))          ;   quiet down indent-mode
 #+end_src
 
 Next a function that defines a few behaviors for fonts in org-more:
@@ -1401,14 +1401,14 @@ For Typescript,  we'll start with the [[https://github.com/emacs-typescript/type
 
 But we'll also need to setup the language server. There are currently two Typescript servers
 available we're going to use the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/][theia-ide]] server. You'll need to install it by running:
-#+begin_src bash
+#+begin_src sh
 sudo npm i -g typescript-language-server
 sudo npm i -g typescript
 #+end_src
 
 Then whenever you want to edit Typescript code you'll need the server running. If Emacs doesn't
 start it on its own you can execute with:
-#+begin_src bash
+#+begin_src sh
 typescript-language-server --stdio
 #+end_src
 
@@ -1571,6 +1571,10 @@ When using docker it helps to use [[https://github.com/spotify/dockerfile-mode][
 *** Markdown
 Markdown is a very common document format. Emacs, of course, has a mode for viewing/editing
 Markdown.
+     For Markdown we'll want the system =pandoc= package installed:
+#+begin_src sh
+sudo apt install pandoc
+#+end_src
 **** Config
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1581,9 +1585,12 @@ Markdown.
 ;; ------------------------------------------------------------------------------------------------
 (use-package markdown-mode
   :ensure t
-  :mode "\\.md\\'"
+  :mode (("Readme\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init
+  (setq markdown-command "pandoc")
   :config
-  (setq markdown-command "marked")
   ;; Adjust font-faces for various headings
   (defun my/set-markdown-header-font-sizes ()
     (dolist (face '((markdown-header-face-1 . 1.2)
