@@ -140,7 +140,6 @@ NOTE: =setq= is a global variable, =setq-default= is the default value for a buf
 (setq create-lockfiles nil)                  ; Don't create lockfiles
 (setq read-process-output-max (* 1024 1024)) ; 1mb -useful for LSP which reads a lot
 #+end_src
-
 ** Unicode support in modes
 Setup Emacs to use "utf-8" as the text encoding for locale, terminal, keyboard, selections and coding systems.
 
@@ -185,15 +184,24 @@ don't want it on.
 ;; ------------------------------------------------------------------------------------------------
 ;; Enable Line Number mode - on ALL modes except specific modes
 ;; ------------------------------------------------------------------------------------------------
-(global-display-line-numbers-mode t)         ;; enable line numbers for ALL buffers/modes
+(require 'display-line-numbers)
 
-;; Disable line numbers for the following list of modes
-(dolist (mode '(org-mode-hook
-                term-mode-hook
-                shell-mode-hook
-                treemacs-mode-hook
-                eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(defcustom display-line-numbers-exempt-modes
+'(vterm-mode eshell-mode shell-mode term-mode ansi-term-mode org-mode)
+  "Major modes on which to disable line numbers."
+  :group 'display-line-numbers
+  :type 'list
+  :version "green")
+
+(defun display-line-numbers--turn-on ()
+  "Turn on line numbers except for certain major modes.
+Exempt major modes are defined in `display-line-numbers-exempt-modes'."
+  (unless (or (minibufferp)
+              (member major-mode display-line-numbers-exempt-modes))
+    (display-line-numbers-mode)))
+
+(global-display-line-numbers-mode)
+
 #+end_src
 
 * Package Management
@@ -904,7 +912,6 @@ key. For example:
 <py<TAB kEY>
 expands out to a "#+begin_src" and "#+end_src" pair
 #+end_src
-
 **** Config
   #+begin_src emacs-lisp
   ; Add Structured Templates to Org
@@ -1600,11 +1607,19 @@ sudo apt install pandoc
                     (markdown-header-face-5 . 1.0)))
       (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
 
+  (use-package markdown-toc
+    :ensure t
+    :bind (:map markdown-mode-command-map
+           ("r" . markdown-toc-generate-or-refresh-toc)))
+
   (defun my/markdown-mode-hook ()
     (my/set-markdown-header-font-sizes))
 
 (add-hook 'markdown-mode-hook 'my/markdown-mode-hook))
 #+end_src
+
+We install basic =markdown= mode and one extra: =markdown-toc=. The add-on can be used to (re)generate
+a *Table of Contents*. The keybinding for that is =C-c C-c r=.
 ** Improved code checking/linting for Python
 The syntax checker in python-mode is pretty basic. We'll add the [[https://www.flycheck.org/en/latest/][flycheck]] package for better syntax
 checking:
@@ -1727,7 +1742,9 @@ Configuration for Ethan-wspace:
 
 #+end_src
 
-* Controlling Buffer Placement
+* TODO Controlling Buffer Placement
+TODO: Need to re-watch this video. Got stopped part way through and didn't finish
+
 When you are running Emacs with multiple open buffers, new buffers being opened may go to
 unexepcted/undesired locations. We can setup Emacs to control new buffer creation. We will use
 Emacs' =display-buffer= command to control buffer placement.
@@ -2059,8 +2076,9 @@ Mode specific keybinds:
 | lsp-mode      | M-x hs-minor-mode            | Enable hs-minor-mode                     |       |
 | hs-minor-mode | C-c @ C-c                    | Toggle code                              |       |
 | flycheck      | M-x flycheck-verify-setup    | Validate/View flycheck settings          |       |
-| pythom-mode   | M-x pyvenv-activate          | Activate venv                            |       |
-| pythom-mode   | M-x pyvenv-deactivate        | De-activate venv                         |       |
+| python-mode   | M-x pyvenv-activate          | Activate venv                            |       |
+| python-mode   | M-x pyvenv-deactivate        | De-activate venv                         |       |
+| markdown-mode | C-c C-c r                    | Insert/update TOC                        |       |
 
 * General Emacs Stuff I picked up for sharing
 While watching the system crafter video series I picked up a number of general Emacs things that are
