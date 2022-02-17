@@ -1,23 +1,23 @@
-#+TITLE: File: ~/Orgs/Emacs.org which generates init.el file for emacs configuration
+#+TITLE: File: ~/Org/Emacs.org which generates init.el file for emacs configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+AUTHOR: Bob Ternosky (Based on System Crafters Videos)
 
 * Introduction
-This is a verbosely commented file that will generate my personal ~/.emacs.d/init.el file. I've
-taken much of the content from David Wilson's "Emacs From Scratch" video series on Youtube which can
+This is a verbosely commented file that will generate my personal =~/.emacs.d/init.el= file. I've
+taken much of the content from David Wilson's =Emacs From Scratch= video series on Youtube which can
 be found at [[https://www.youtube.com/channel/UCAiiOTio8Yu69c3XnR7nQBQ][System Crafters @ Youtube]].
 
 Feel free to steal/adjust as you like.
 
 * Conventions
 In this document you will see keyboard shortcuts explained in text. A few examples:
-- =M-= indicates pressing the "Meta" key (Alt or ESC depending on your setup). So =M-x= means Meta+x
-- =C-= indicates pressing the "CTRL" key. So =C-c= means pressing CTRL+C
+- =M-= indicates pressing the "Meta" key (Alt or ESC depending on your setup). So =M-x= means =Meta+x=
+- =C-= indicates pressing the "CTRL" key. So =C-c= means pressing =CTRL+C=
 
 These can also be used in longer combinations such as:
-- =C-c d= => "CTRL+c" then "d" without the CTRL
-- =M-x some-emacs-function-name= => "Meta+x", then when the mini-buffer opens, type:
-  "some-emacs-function-name"
+- =C-c d= --> =CTRL+c= then =d= without the CTRL
+- =M-x some-emacs-function-name= --> =Meta+x=, then when the mini-buffer opens, type:
+  =some-emacs-function-name=
 
 * Performance Tuning (Optional)
 To speed Emacs load times it helps to know how long it takes it to load and how much garbage
@@ -111,8 +111,8 @@ Emacs loaded in 0.92 seconds with 26 garbage collections.
 We cut load time in half and saved a bunch on memory usage as well.
 
 * Emacs UI General Settings
-This section contains a number of tweaks to basic emacs looks and functions. These don't depend on
-anything external.
+ This section contains a number of tweaks to basic emacs looks and functions. These don't depend on
+ anything external.
 
 ** General UI/Behavior Tweaks
 Here are my general emacs UI tweaks with commentary in line.
@@ -141,7 +141,7 @@ NOTE: =setq= is a global variable, =setq-default= is the default value for a buf
 (setq read-process-output-max (* 1024 1024)) ; 1mb -useful for LSP which reads a lot
 #+end_src
 ** Unicode support in modes
-Setup Emacs to use "utf-8" as the text encoding for locale, terminal, keyboard, selections and coding systems.
+Setup Emacs to use =utf-8= as the text encoding for locale, terminal, keyboard, selections and coding systems.
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -163,6 +163,8 @@ for fixed and variable fonts.  These can be overridden wherever you desire.
 ;; Set Default fonts
 ;; ------------------------------------------------------------------------------------------------
 ;; DEFAULT/FIXED should be mono: "Office Code Pro", "Source Code Pro" or "Fira Code"
+;; You MUST install these fonts yourself and run `fc-cache`
+;;
 ;; Set default font height using our defvar above for size
 (set-face-attribute 'default nil :font "Office code Pro-11" :height my/default-font-size)
 ;;(set-face-attribute 'default nil :font "Source Code Pro-11" :height my/default-font-size)
@@ -205,21 +207,21 @@ Exempt major modes are defined in `display-line-numbers-exempt-modes'."
 #+end_src
 
 * Package Management
-Emacs has multiple package management options. They serve the same purpose that "apt" or "yum" do
+Emacs has multiple package management options. They serve the same purpose that =apt= or =yum= do
 for Linux distributions. We'll use [[https://github.com/jwiegley/use-package][use-package]] as the package management tool.  It depends on the
-built-in emacs *package* module.
+built-in emacs =package= module.
 
 Just like apt and yum you need to download the latest manifest of available "packages" from time to
 time. This can be done by running =M-x package-refresh-contents= in Emacs.
 
 ** Config keywords background
 This section performs the following:
-  - Enable the "package" module
-  - Define the package repositories we use for package downloads
+  - Enable the =package= module
+  - Define the repositories we use for package downloads
   - Initialize the package system and download package contents
-  - Enable the "use-package" module
-  - Add =:ensure t= to EVERY use of "use-package".
-    - This means we don't need to add ":ensure t" every time we use it, but I do for safety anyway.
+  - Enable the =use-package= module
+  - Add =:ensure t= to EVERY use of =use-package=.
+    - This means we don't need to add =:ensure t= every time we invoke =use-package=, but I do for safety anyway.
 
 Whenever you use the =use-package= directive in the config file there are a number of options you can
 provide. We'll document these here so that when you see them used when importing other packages you
@@ -273,7 +275,7 @@ The options also control module load timing according to this table:
 ** Keeping Packages Up-to-Date
 Emacs doesn't auto-update packages. We need to do that ourself.
 
-*** Manual Update  via package.el
+*** Manual Update  via =package.el=
 To view what you do have installed run =M-x list-packages=
 
 In the message bar it will also show you a message about the number of packages that can be updated:
@@ -286,7 +288,7 @@ packages will upgrade.
 
 *NOTE*: You MUST re-start Emacs to get the updated packages.
 *** Automatic Updates via auto-update-package
-We can get automatic updates using the "auto-package-update" package.
+    We can get automatic updates using the =auto-package-update= package.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
 ;; Package: auto-package-update
@@ -303,14 +305,14 @@ We can get automatic updates using the "auto-package-update" package.
   (auto-package-update-at-time "09:00"))         ; prompt me at 9am (cron run to catch in case we don't ever close emacs)
 #+end_src
 **** Using auto-package-update to update "now".
-You can manually trigger auto-package-update with: =M-x auto-package-update-now=
+       You can manually trigger =auto-package-update= with: =M-x auto-package-update-now=
 
 ** Backing up your configuration before update
-Package breakage does happen. It's a good idea to back up your configuration before you do updates.
+   Package breakage does happen. It's a good idea to back up your configuration before you do updates.
 
 * Command Log Mode
-This section is completely optional. It is mostly useful for doing demos with other people so that
-they can see what key combinations you are pressing. It uses [[https://github.com/lewang/command-log-mode][command-log-mode]]
+  This section is completely optional. It is mostly useful for doing demos with other people so that
+  they can see what key combinations you are pressing. It uses [[https://github.com/lewang/command-log-mode][command-log-mode]]
 
 ** Config
 This section only tells emacs to download/install the mode. It does nothing else.
@@ -337,8 +339,8 @@ To utilize this mode you need to execute the following commands in Emacs:
 The command log buffer will now show every key combo command to emacs you press.
 
 * Icon support for packages
-We will be utilizing a few packages that depend on an icon library. This segment includes the icon
-libraries we need.  The packages are:
+ We will be utilizing a few packages that depend on an icon library. This segment includes the icon
+ libraries we need.  The packages are:
   - [[https://github.com/domtronn/all-the-icons.el][all-the-icons]]
   - [[https://github.com/jtbm37/all-the-icons-dired][all-the-icon-dired]]
 
@@ -365,12 +367,12 @@ to be done once): =M-x all-the-icons-install-fonts=
 #+end_src
 
 * Modifying the Emacs Modeline
-The Emacs modeline is the line at the bottom of the screen that displays some information. It is
-highly configurable and we're going to take advantage of that to provide much more contextual
-information.
+ The Emacs modeline is the line at the bottom of the screen that displays some information. It is
+ highly configurable and we're going to take advantage of that to provide much more contextual
+ information.
 
 ** Add date/time to the modeline
-Here we add a date/time widget to the modeline and control it's format.
+  Here we add a date/time widget to the modeline and control it's format.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
 ;; Modeline adjustments
@@ -388,8 +390,8 @@ Here we add a date/time widget to the modeline and control it's format.
 #+end_src
 
 ** Use doom-modeline
-The [[https://github.com/seagle0128/doom-modeline][doom-modeline]] package adds a wealth of information in terms of indicators in the modeline and
-hooks in with other modules e.g. flycheck, python-mode, LSP to add status indicators.
+   The [[https://github.com/seagle0128/doom-modeline][doom-modeline]] package adds a wealth of information in terms of indicators in the modeline and
+   hooks in with other modules e.g. =flycheck=, =python-mode=, =LSP= to add status indicators.
 
 *** doom-modeline
 #+begin_src emacs-lisp
@@ -405,9 +407,9 @@ hooks in with other modules e.g. flycheck, python-mode, LSP to add status indica
 #+end_src
 
 * Add contextual information/help to the mini-buffer output
-With certain command in Emacs (e.g. =M-x=) the mini-buffer will open up and show a list of possible
-commands. Using the [[https://github.com/justbur/emacs-which-key][which-key]] package the mini-buffer is modified to show context help for each
-option in the window.
+  With certain command in Emacs (e.g. =M-x=) the mini-buffer will open up and show a list of possible
+  commands. Using the [[https://github.com/justbur/emacs-which-key][which-key]] package the mini-buffer is modified to show context help for each
+  option in the window.
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -426,13 +428,13 @@ option in the window.
 #+end_src
 
 * Improved Completion in the Emacs mini-buffer and other tools
-In stock emacs you can do TAB completion in the mini-buffer (e.g. during =M-x find-file=).  We're
-going to replace the built-in completion mechanism and replace some existing tools for better
-completion using a number of packages in concert.
+ In stock emacs you can do TAB completion in the mini-buffer (e.g. during =M-x find-file=).  We're
+ going to replace the built-in completion mechanism and replace some existing tools for better
+ completion using a number of packages in concert.
 
 ** Basic mini-buffer improvements with ivy/counsel/swiper
-There is a collection of useful packages: Ivy, Swiper and Counsel that we'll begin with. All of them
-come from the [[https://github.com/abo-abo/swiper][swiper/ivy/counsel site]].  The following table indicates the purpose of each:
+  There is a collection of useful packages: Ivy, Swiper and Counsel that we'll begin with. All of them
+  come from the [[https://github.com/abo-abo/swiper][swiper/ivy/counsel site]].  The following table indicates the purpose of each:
 | Package Name | Purpose                                          |
 | ivy          | completion framework                             |
 | counsel      | ivy-enhanced replacements of some emacs commands |
@@ -490,21 +492,21 @@ The next configuration section performs the following:
 #+end_src
 
 *** Extra options
-When you are in an ivy mini-buffer ALT-o will open extra options.
+    When you are in an ivy mini-buffer =ALT-o= will open extra options.
 
-Examples:
-  -  =C-x C-f= (find-file) then press ALT-o
-  -  =M-x= then press ALT-o
-You can get to things like describe function and/or extra stuff
+    Examples:
+      -  =C-x C-f= (find-file) then press =ALT-o=
+      -  =M-x= then press =ALT-o=
+    You can get to things like describe function and/or extra stuff
 
 ** Improved completion options with ivy-prescient
-The [[https://github.com/raxod502/prescient.el][ivy-prescient]] package improves on the mini-buffer output of ivy. When suggesting completions
-ivy-prescient will track frequently used options and move them to the top of the suggestions list.
+  The [[https://github.com/raxod502/prescient.el][ivy-prescient]] package improves on the mini-buffer output of ivy. When suggesting completions
+  =ivy-prescient= will track frequently used options and move them to the top of the suggestions list.
 
-This package is very configurable and we'll perform the following configurations:
-  - Persist "frequency" counts for command between sessions.
-  - Disable sorting elements by shortest length
-  - Disable ivy-prescient coloring in mini-buffer, ivy's is better
+  This package is very configurable and we'll perform the following configurations:
+    - Persist "frequency" counts for command between sessions.
+    - Disable sorting elements by shortest length
+    - Disable =ivy-prescient= coloring in mini-buffer, ivy's is better
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -555,8 +557,8 @@ This package is very configurable and we'll perform the following configurations
 
 ** Add help text with ivy-rich
 
-The [[https://github.com/Yevgnen/ivy-rich][ivy-rich]] package will be used to add a column of help on commands/variables/functions where
-possible.
+  The [[https://github.com/Yevgnen/ivy-rich][ivy-rich]] package will be used to add a column of help on commands/variables/functions where
+  possible.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
 ;; Package: ivy-rich
@@ -572,9 +574,9 @@ possible.
 #+end_src
 
 * Improved Emacs help
-The [[https://github.com/Wilfred/helpful][helpful]] package provides an improved help experience compared to the built-in emacs help.  The
-configuration below binds the new helpful describe-xxx methods when you use the built-in
-describe-xxx methods.
+ The [[https://github.com/Wilfred/helpful][helpful]] package provides an improved help experience compared to the built-in emacs help.  The
+ configuration below binds the new helpful =describe-xxx= methods when you use the built-in
+ =describe-xxx= methods.
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -599,10 +601,10 @@ describe-xxx methods.
 #+end_src
 
 * Themes
-There is fantastic set of themes bundled into a single package [[https://github.com/hlissner/emacs-doom-themes][doom-themes]].
+  There is fantastic set of themes bundled into a single package [[https://github.com/hlissner/emacs-doom-themes][doom-themes]].
 
 ** Config
-The config for doom-themes is very simple:
+  The config for =doom-themes= is very simple:
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -620,22 +622,22 @@ The config for doom-themes is very simple:
 #+end_src
 
 ** Other info
-- You can use =M-x doom-load-theme= to load new themes on the fly.
-- There are a bunch of themes available at [[ https://peach-melpa.org][Peach Melpa]] as well.
+    - You can use =M-x doom-load-theme= to load new themes on the fly.
+    - There are a bunch of themes available at [[ https://peach-melpa.org][Peach Melpa]] as well.
 
 * Projectile: Working with projects
-Some emacs modes/tools need to have the context of a "project" to work more effectively. We'll setup
-the [[https://github.com/bbatsov/projectile][projectile]] package for an improved project management setup.
+ Some emacs modes/tools need to have the context of a "project" to work more effectively. We'll setup
+ the [[https://github.com/bbatsov/projectile][projectile]] package for an improved project management setup.
 
 ** Config
-In addition to installing projectile we also:
-  - disable projectile from adding messages to the status bar
-  - Use ivy to do completions for projectile
-  - Bind =C-c p= to be the root of all projectile commands
-  - Define the path where projects are found. Note a project is generally a repo - so a directory in
-    which each item is a code repo. See the projectile page for other types of "projects". Note: You
-    can also add a file .projectile to a directory to make it a projectile root.
-  - Make counsel aware of projectile
+    In addition to installing =projectile= we also:
+      - disable =projectile= from adding messages to the status bar
+      - Use =ivy= to do completions for projectile
+      - Bind =C-c p= to be the root of all =projectile= commands
+      - Define the path where projects are found. Note a project is generally a repo - so a directory in
+        which each item is a code repo. See the projectile page for other types of "projects". Note: You
+        can also add a file =.projectile= to a directory to make it a =projectile= root.
+      - Make =counsel= aware of =projectile=
 
 #+begin_src emacs-lisp
 ;;-------------------------------------------------------------------------------------------------
@@ -671,7 +673,7 @@ In addition to installing projectile we also:
 #+end_src
 
 ** Commands
-All projectile commands begin with =C-c p=. A number of useful projectile commands:
+   All projectile commands begin with =C-c p=. A number of useful projectile commands:
 | Keybind       | Command              | Comment                                                 |
 | C-c p         | none                 | Command starter - which-key will show all continuations |
 | C-c p C-h     | projectile help      | open projectile help                                    |
@@ -685,28 +687,28 @@ All projectile commands begin with =C-c p=. A number of useful projectile comman
 | C-c p <right> | next proj. buffer    | Switch to next project buffer                           |
 
 ** Make it faster
-Projectile depends on system utilities "find" and "grep". The projectile project recommends
-installing the following packages to your Linux system:
-  - fd (fdfind in Debian/Ubuntu) - A Rust binary that works a LOT like find. But has some improvements:
-    - fd <pattern> is same as find -iname '\*<pattern>\*'
-    - colorized output
-    - faster than find in many cases
-    - ignores hidden directories by default
-    - obeys contents of .gitignore
-    - Supports regular expressions
-    - Supports Unicode
-  - ag (silversearcher-ag in Debian) or rg (ripgrep in Debian)
-    - silversearcher => very fast grep-like program
-    - ripgrep => recursively searches directories for a regex pattern
+   =projectile= depends on system utilities =find= and =grep=. The =projectile= project recommends
+  installing the following packages to your Linux system:
+      - =fd= (fdfind in Debian/Ubuntu) - A Rust binary that works a LOT like find. But has some improvements:
+        - =fd <pattern>= is same as =find -iname '\*<pattern>\*'=
+        - colorized output
+        - faster than find in many cases
+        - ignores hidden directories by default
+        - obeys contents of =.gitignore=
+        - Supports regular expressions
+        - Supports Unicode
+    - =ag= (=silversearcher-ag= in Debian) or =rg= (=ripgrep= in Debian)
+      - =silversearcher= --> very fast =grep=-like program
+      - =ripgrep= --> recursively searches directories for a regex pattern
 
-These tools improve the performance of certain projectile operations. Also, since these are system
-packages they are available outside of Emacs.
+  These tools improve the performance of certain =projectile= operations. Also, since these are system
+  packages they are available outside of Emacs.
 
 * Magit: Git on super-steroids
-The [[https://magit.vc/][magit]] package is git on super-steroids. I've seen numerous comments to the effect that *magit* is worth the price of switching to Emacs from any other tool. If you've never used magit, read the [[https://emacsair.me/2017/09/01/magit-walk-through/][Emacsair magit walkthrough]]
+ The [[https://magit.vc/][magit]] package is git on super-steroids. I've seen numerous comments to the effect that *magit* is worth the price of switching to Emacs from any other tool. If you've never used magit, read the [[https://emacsair.me/2017/09/01/magit-walk-through/][Emacsair magit walkthrough]]
 
 ** Config
-Magit config is very simple. Just load the mode.
+  =magit= config is very simple. Just load the mode.
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -721,10 +723,10 @@ Magit config is very simple. Just load the mode.
 #+end_src
 
 ** Usage
-The basic entry point for *magit* is C-x g, which launches a "magit status". Nearly everything
-displayed in the buffer can be acted upon with key presses.
+  The basic entry point for =magit= is =C-x g=, which launches a =magit= status. Nearly everything
+  displayed in the buffer can be acted upon with key presses.
 
-General key actions:
+  General key actions:
 | Key   | Action                                                |
 | ENTER | Show more details                                     |
 | TAB   | Toggle hide/show section                              |
@@ -740,9 +742,9 @@ General key actions:
 | F     | Show the Pull pop-up                                  |
 | P     | Show the Push pop-up                                  |
 
-In a pop-up, use =C-c C-c= to save. =C-t= will show actions in a pop-up.
+  In a pop-up, use =C-c C-c= to save. =C-t= will show actions in a pop-up.
 
-Context Specific key binds:
+  Context Specific key binds:
 | Context                | Key | Action                                        |
 | cursor on log hash     | d   | Show diff pop-up for taking actions on a diff |
 | cursor on unstaged     | s   | Stage the change                              |
@@ -758,40 +760,40 @@ Context Specific key binds:
   - =?= brings up ALL commands
 
 * Org Mode: Text editor, day planner and more
-[[https://orgmode.org/][org-mode]] is explained as a major mode for convenient text markup. However, the things you can do
-with org-mode are insane. It is a text markup language, a way to give presentations, a day planner,
-a time logger, an electronic TODO list and more. The System Crafters videos contain somewhere in the
-neighborhood of 3 HOURS explaining how to use Org mode effectively.
+  [[https://orgmode.org/][org-mode]] is explained as a major mode for convenient text markup. However, the things you can do
+  with =org-mode= are insane. It is a text markup language, a way to give presentations, a day planner,
+  a time logger, an electronic TODO list and more. The System Crafters videos contain somewhere in the
+  neighborhood of 3 HOURS explaining how to use =org-mode= effectively.
 
 ** Org Mode Capabilities
-Some examples of what he does:
-  - Text writing (with linking + images)
-  - Styling to improve the look of plain text
-  - Day Planner
-  - Task management
-    - States: TODO, NEXT, CANCEL, DONE
-    - Tagging
-    - Scheduling
-    - Due Dates
-    - Recurring Dates
-    - Calendar/Agenda view
-    - Automated Logging on task completion
-  - Capture Templates - post it notes to files without leaving current buffer
-  - Habit Tracking with graphs
+  Some examples of what he does:
+    - Text writing (with linking + images)
+    - Styling to improve the look of plain text
+    - Day Planner
+    - Task management
+      - States: TODO, NEXT, CANCEL, DONE
+      - Tagging
+      - Scheduling
+      - Due Dates
+      - Recurring Dates
+      - Calendar/Agenda view
+      - Automated Logging on task completion
+    - Capture Templates - post it notes to files without leaving current buffer
+    - Habit Tracking with graphs
 
-See Video: https://www.youtube.com/watch?v=PNE-mgkZ6HM (Organize your life with Org
-Mode)
+  See Video: https://www.youtube.com/watch?v=PNE-mgkZ6HM (Organize your life with Org
+  xMode)
 
-** Org mode basic setup
-The org mode config is pretty large, we'll break it into sections.
+** =org-mode= basic setup
+  The =org-mode= config is pretty large, we'll break it into sections.
 *** Utility functions
-First we're going to setup a few functions for later use.
+    First we're going to setup a few functions for later use.
 
-First a function to define some styles when org-mode is in use.
-- Auto-indent mode
-- Use proportional fonts on text by default
-- disable automatic line wrapping  at space/line-end, we'll use visual fill mode instead
-- Use visual-line-mode for wrapping
+   First a function to define some styles when org-mode is in use.
+    - Auto-indent mode
+    - Use proportional fonts on text by default
+    - Disable automatic line wrapping  at space/line-end, we'll use visual fill mode instead
+    - Use =visual-line-mode= for wrapping
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -806,10 +808,10 @@ First a function to define some styles when org-mode is in use.
   (diminish org-indent-mode))          ;   quiet down indent-mode
 #+end_src
 
-Next a function that defines a few behaviors for fonts in org-more:
-1. Replace the =-= character for lists with a Unicode bullet
-2. Define font-face scaling for indentation levels
-3. Define specific sections of the doc to use fixed-pitch font since in the other function we're setting variable-pitch globally
+  Next a function that defines a few behaviors for fonts in org-more:
+    1. Replace the =-= character for lists with a Unicode bullet
+    2. Define font-face scaling for indentation levels
+    3. Define specific sections of the doc to use fixed-pitch font since in the other function we're setting variable-pitch globally
 
 #+begin_src emacs-lisp
   (defun my/org-font-setup ()            ; Define a set of behaviors for org-fonts in org-mode:
@@ -863,9 +865,9 @@ Next a function that defines a few behaviors for fonts in org-more:
 #+end_src
 
 *** Packages
-Next we'll install two packages:
-  - The basic org package
-  - [[https://github.com/sabof/org-bullets][org-bullets]] - better list bullets package
+    Next we'll install two packages:
+      - The basic =org= package
+      - [[https://github.com/sabof/org-bullets][org-bullets]] - better list bullets package
 
 #+begin_src emacs-lisp
 (use-package org                                  ; Setup actual org-mode
@@ -886,13 +888,13 @@ Next we'll install two packages:
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
 
-*** Code Execution from within org-mode
-We can utilize Org mode to manage configuration files (for example this file). Using *org-babel* we
-can write a fully documented file in Org with nice formatting and utilize it's code execution
-capabilities to take blocks of the document and write out just those block to a file (or set of
-files).
+*** Code Execution from within =org-mode=
+    We can utilize =org-mode= to manage configuration files (for example this file). Using =org-babel= we
+    can write a fully documented file in Org with nice formatting and utilize it's code execution
+   capabilities to take blocks of the document and write out just those block to a file (or set of
+   files).
 
-First we define the languages that we look for in code blocks that use the "begin_src/end_src" markers:
+  First we define the languages that we look for in code blocks that use the =begin_src= and =end_src= markers:
 #+begin_src emacs-lisp
 ;; org-babel can be used to execute code in Org files with C-c C-c (needed for tangle - writing out to a file)
 (with-eval-after-load 'org
@@ -905,9 +907,9 @@ First we define the languages that we look for in code blocks that use the "begi
 #+end_src
 
 *** Structured Templates
-Org Mode's structured templates allow for quick code block insertion to an Org file. To use this
-feature type =<= followed by the template name (e.g. =py= for python, =el= for emacs-lisp) then the =TAB=
-key. For example:
+    =org-mode='s structured templates allow for quick code block insertion to an Org file. To use this
+    feature type =<= followed by the template name (e.g. =py= for python, =el= for emacs-lisp) then the =TAB=
+   key. For example:
 #+begin_src
 <py<TAB kEY>
 expands out to a "#+begin_src" and "#+end_src" pair
@@ -932,14 +934,13 @@ expands out to a "#+begin_src" and "#+end_src" pair
 #+end_src
 
 *** Code Tangling
-Next we setup a block of code that uses org-babel-tangle to write out the code blocks of
-~/Org/Emacs.org to ~/Org/init.el as defined in line #2 of this document defined by the PROPERTY line
-starting with:
+    Next we setup a block of code that uses =org-babel-tangle= to write out the code blocks of
+    code in our .org file to =.init.el= as defined in line #2 of this document defined by the PROPERTY line
+    starting with:
 
-     =#+: *PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes=
+    =#+: *PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes=
 
-This line indicates that Org should grab all block_src of type emacs-lisp and "tangle" (AKA write) them
-to the file =./init.el=.
+   This line indicates that Org should grab all chunks of =block_src= with a type of =emacs-lisp= and =tangle=  (AKA write) them  to the file =./init.el=.
 
 #+begin_src emacs-lisp
 ;; Automatically tangle our Emacs.org config file when we save it
@@ -956,7 +957,8 @@ to the file =./init.el=.
 #+end_src
 
 *** visual-fill in org mode
-Lastly, we'll enable [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to org-mode set at 100 characters.
+    Lastly, we'll enable [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] within =org-mode= set at 100 characters.
+
 #+begin_src emacs-lisp
 ;; Package: visual-fill-column
 (defun my/org-mode-visual-fill ()           ; Define custom behaviors for org-mode-visual-fill
@@ -970,92 +972,92 @@ Lastly, we'll enable [[https://github.com/joostkremers/visual-fill-column][visua
 #+end_src
 
 ** Tracking Tasks/TODOs with Agenda
-Agenda mode is EXTREMELY powerful and pretty complex. We'll cover quite a few topics for using
-Org-mode and agenda's to have a personal calendar, a workflow management tool and a note taking
-application where all of those are completely integrated.
+   Agenda mode is EXTREMELY powerful and pretty complex. We'll cover quite a few topics for using
+   =org-mode= and agendas to have a personal calendar, a workflow management tool and a note taking
+   application where all of those are completely integrated.
 *** Scheduled Tasks and Tasks with Deadlines
-We're going to setup some .org files that will show a bunch of the features of Org Agenda's.
+    We're going to setup some .org files that will show a bunch of the features of Org Agenda's.
 
-We're going to create a file ~/Org/Tasks.org with 2 Org header sections:
-  - Active
-  - Backlog
+    We're going to create a file =~/Org/Tasks.org with= 2 header sections:
+      - Active
+      - Backlog
 
-Under Active you can create tasks indented with two asterisks. Put a TODO in front of each task name.
+    Under =Active= you can create tasks indented with two asterisks. Put a TODO in front of each task name.
 
-For each task we will either schedule a task or give the task a deadline. In either case, put the
-cursors on a task line then:
-  - Schedule a Task: run =M-x org-schedule= (or use =C-c C-s=) and a calendar widget pops open, pick a
-    date.
-      - SHIFT + Arrow keys to navigate around the calendar or click with mouse
-      - When a data is selected it will add a line: =SCHEDULED: <YYYY-MM-DD DOW>= under the task
-  - Assign a Deadline: run =M-x org-deadline= (or use =C-c C-d=) and a calendar widget pops open, pick
-    a date.
-      - SHIFT + Arrow keys to navigate around the calendar or click with mouse
-      - When a data is selected it will add a line: =DEADLINE: <YYYY-MM-DD DOW>= under the task
+    For each task we will either schedule a task or give the task a deadline. In either case, put the
+    cursors on a task line then:
+      - Schedule a Task: run =M-x org-schedule= (or use =C-c C-s=) and a calendar widget pops open, pick a
+        date.
+          - =SHIFT + Arrow= keys to navigate around the calendar or click with mouse
+          - When a data is selected it will add a line: =SCHEDULED: <YYYY-MM-DD DOW>= under the task
+      - Assign a Deadline: run =M-x org-deadline= (or use =C-c C-d=) and a calendar widget pops open, pick
+        a date.
+          - =SHIFT + Arrow= keys to navigate around the calendar or click with mouse
+          - When a data is selected it will add a line: =DEADLINE: <YYYY-MM-DD DOW>= under the task
 
 *** Viewing the Agenda
-Then you can get the Org Agenda view of your tasks by running =M-x org-agenda=. This pops up the
-Agenda options dialog. Press =a= to get the normal agenda view. A new window will open up showing
-the weekly agenda and their Scheduled / Deadline dates and statuses.
+    Then you can get the Org Agenda view of your tasks by running =M-x org-agenda=. This pops up the
+    Agenda options dialog. Press =a= to get the normal agenda view. A new window will open up showing
+    the weekly agenda and their Scheduled / Deadline dates and statuses.
 
 *** Task life cycle
-To complete a task, select the task and press =SHIFT + Right Arrow= to advance through life cycle
-and change =TODO= to =DONE=. When you do that the task will gain a =CLOSED:[YYYY-MM-DD DOW HH:MM]=
-string.
+    To complete a task, select the task and press =SHIFT + Right Arrow= to advance through life cycle
+    and change =TODO= to =DONE=. When you do that the task will gain a =CLOSED:[YYYY-MM-DD DOW HH:MM]=
+    string.
 
 *** Recurring Items
-Next we'll show recurring items by creating a file ~/Org/Birthdays.org with 1 Org header section:
-  - Family
+    Next we'll show recurring items by creating a file =~/Org/Birthdays.org= with 1 header section:
+      - Family
 
-Under that create one or more people with two asterisks. Put cursors at end of each person's name
-and run: =M-x org-time-stamp= (or =C-c .=) Pick a date the following shows up: =<YYYY-MM-DD DOW>.=
- That would put a task reminder for that date. But we want it to be EVERY year. So change the newly
-added text to: =<YYYY-MM-DD DOW +1y>=. You can validate the =+1y= part is working by changing YYYY to a
-prior year and see that the birthday still shows up this year.
+    Under that create one or more people with two asterisks. Put cursors at end of each person's name
+    and run: =M-x org-time-stamp= (or =C-c .=) Pick a date the following shows up: =<YYYY-MM-DD DOW>.=
+    That would put a task reminder for that date. But we want it to be EVERY year. So change the newly
+    added text to: =<YYYY-MM-DD DOW +1y>=. You can validate the =+1y= part is working by changing =YYYY= to a
+    prior year and see that the birthday still shows up this year.
 
 *** Adding Task statuses
-By default Tasks only have =TODO= and =DONE= statuses. We'll add some new statuses.
+    By default Tasks only have =TODO= and =DONE= statuses. We'll add some new statuses.
 
 *** Tagging
-To add a tag to a task: =M-x counsel-org-tag= or =M-x org-set-tags=. Enter tag name, press enter.
-To add a 2nd tag to existing tags: =M-x counsel-org-tag= , then press =ALT+ENTER= to select existing
-tag, then type new ones and press ENTER again to save.
+     To add a tag to a task: =M-x counsel-org-tag= or =M-x org-set-tags=. Enter tag name, press enter.
+     To add a 2nd tag to existing tags: =M-x counsel-org-tag= , then press =ALT+ENTER= to select existing
+     tag, then type new ones and press =ENTER= again to save.
 
-Keybind for tagging: Press =C-c C-q=. This interface will also obey the =org-tag-alist= in the
-configuration file.
+    Keybind for tagging: Press =C-c C-q=. This interface will also obey the =org-tag-alist= in the
+    configuration file.
 
 *** Adding Effort Estimates for filtering
-To add an effort estimate to a task select a task and run: =M-x org-set-effort=. This adds a
-"PROPERTIES" section to the task with values of: "Effort: <whatever value you put in>".
+     To add an effort estimate to a task select a task and run: =M-x org-set-effort=. This adds a
+     =PROPERTIES= section to the task with values of: =Effort: <whatever value you put in>=.
 
 *** Properties
-There is a more generic command =M-x org-set-property= where you can add arbitrary properties to a
-task. Properties can be used in the agenda dashboard and we have a rule in the configuration section
-that utilizes the "Effort" property.
+     There is a more generic command =M-x org-set-property= where you can add arbitrary properties to a
+     task. Properties can be used in the agenda dashboard and we have a rule in the configuration section
+     that utilizes the =Effort= property.
 
-*** Refiling
-Refiling is the Org function that helps you move tasks from one area to another. To make use of this
-create a file ~/Org/Archive.org. In that file create headings for any place you would want to
-file. We'll start with 12 headings one for each month: January, February...December.
+*** Re-filing
+     =Re-filing= is the Org function that helps you move tasks from one area to another. To make use of this
+     create a file =~/Org/Archive.org=. In that file create headings for any place you would want to
+     file. We'll start with 12 headings one for each month: January, February...December.
 
-Next open Tasks.org and put cursor on a task in the =DONE= state and run =M-x org-refile=. It will show
-you the top level headings of files identified in the "org-refile-targets" section of the config. So
-it will show "January (Archive.org)" etc. Pick the section you want the item moved to and it will
-move the item automatically. NOTE: Refiling does NOT do an auto-save without extra configuration.
+    Next open Tasks.org and put cursor on a task in the =DONE= state and run =M-x org-refile=. It will show
+    you the top level headings of files identified in the =org-refile-targets= section of the config. So
+    it will show "January (Archive.org)" etc. Pick the section you want the item moved to and it will
+    move the item automatically. NOTE: Re-filing does NOT do an auto-save without extra configuration.
 
 *** Capture Templates AKA Post-it-Notes/Journals
-Capture templates are a way to jot quick notes into specific files without having to open a buffer,
-write a note, close the buffer and jump back into what you are doing. You setup a configuration that
-defines your "post-it-note/journal" files. Then with a few keystrokes you get prompted for one or
-more pieces of information in the mini-buffer automatically. When you've filled out the data it adds
-the data to the defined destination file and saves it without ever leaving your current buffer.
+     Capture templates are a way to jot quick notes into specific files without having to open a buffer,
+     write a note, close the buffer and jump back into what you are doing. You setup a configuration that
+     defines your "post-it-note/journal" files. Then with a few keystrokes you get prompted for one or
+     more pieces of information in the mini-buffer automatically. When you've filled out the data it adds
+     the data to the defined destination file and saves it without ever leaving your current buffer.
 
 *** Adding a custom Agenda Dashboard
-We can customize the Agenda. The Lisp for this is a bit complicated - see the configuration section
-below for details.
+    We can customize the Agenda. The Lisp for this is a bit complicated - see the configuration section
+    below for details.
 
 ** Org mode Tasks/Agenda configuration
-The config for all of the above:
+    The config for all of the above:
 
 #+begin_src emacs-lisp
 ;; Use Agenda logging when tasks are completed
@@ -1189,11 +1191,11 @@ The config for all of the above:
 #+end_src
 
 ** How to give Presentations with Org mode and org-tree-slide
-If you are giving a text heavy presentation and write the content using org-mode you can also use
-Emacs as the presentation tool using [[https://github.com/takaxp/org-tree-slide][org-tree-slide]].
+    If you are giving a text heavy presentation and write the content using org-mode you can also use
+    Emacs as the presentation tool using [[https://github.com/takaxp/org-tree-slide][org-tree-slide]].
 
 *** Configuration
-To enable =org-tree-slide= we need to add some more configuration:
+     To enable =org-tree-slide= we need to add some more configuration:
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1222,9 +1224,9 @@ To enable =org-tree-slide= we need to add some more configuration:
   (org-image-actual-width nil))  ; do not use actual image size when inlining. Use Attrs instead
 #+end_src
 
-We use the =org-image-actual width nil= setting to tell org mode not to use the image's actual width
-to control how big the image is. Instead we will use an Org Property setting (ATTR_HTML: width) to
-control it. Examples:
+    We use the =org-image-actual width nil= setting to tell org mode not to use the image's actual width
+    to control how big the image is. Instead we will use an Org Property setting (ATTR_HTML: width) to
+    control it. Examples:
 
 #+begin_src unix_conf
 #+ATTR_HTML: :width 500 :height 300
@@ -1238,8 +1240,8 @@ control it. Examples:
 #+end_src
 
 *** Using org-tree-slide
-To use =org-tree-slide,= you need to have an org doc open. Then run =M-x org-tree-slide-mode=.
- While you are in presentation mode, the following keybinds work:
+     To use =org-tree-slide,= you need to have an org doc open. Then run =M-x org-tree-slide-mode=.
+     While you are in presentation mode, the following keybinds work:
 
 | Keybind                            | Purpose                                      |
 | C-<                                | Previous Slide                               |
@@ -1248,11 +1250,11 @@ To use =org-tree-slide,= you need to have an org doc open. Then run =M-x org-tre
 | M-x org-tree-slide-mode            | Quit Presentation                            |
 | M-x org-tree-slide-play-with-timer | Enable countdown timer in modeline           |
 
-Every top level heading is a new slide. Sub-headings will slide into current slide one at a time and
-provide a breadcrumb to indicate where you are within the doc.
+    Every top level heading is a new slide. Sub-headings will slide into current slide one at a time and
+    provide a breadcrumb to indicate where you are within the doc.
 
 *** Different org-tree-slide Profiles
-Org tree slide has a few built-in profiles.
+     =org-tree-slide= has a few built-in profiles.
 
 | Keybind                                 | Profile                                   |
 | M-x org-tree-slide-simple-profile       | No header, no breadcrumb                  |
@@ -1260,14 +1262,14 @@ Org tree slide has a few built-in profiles.
 | M-x org-tree-slide-narrowing-profile    | only shows TODO/COMMENT, authoring mode   |
 
 * Programming Support
-This is obviously the meat of the config to turn Emacs into a modern IDE.
+ This is obviously the meat of the config to turn Emacs into a modern IDE.
 
 ** More visible delimiters
-The [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] packages colorize parentheses, brackets and braces so it is easier to see
-which ones match up.
+    The [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] packages colorize parentheses, brackets and braces so it is easier to see
+    which ones match up.
 
-We enable if for "prog-mode". All programming modes (e.g. python-mode) are derived from
- "prog-mode" so it should work for all languages and any other modes that use prog-mode as a base.
+    We enable if for =prog-mode=. All programming modes (e.g. =python-mode=) are derived from
+    =prog-mode= so it should work for all languages and any other modes that use =prog-mode= as a base.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
 ;; Package: rainbow-delimiters
@@ -1282,9 +1284,9 @@ We enable if for "prog-mode". All programming modes (e.g. python-mode) are deriv
 #+end_src
 
 ** Code Folding
-Python mode comes with the HideShow module:
-Enable: =M-x hs-minor-mode=
-Toggle Block: =C-c @ C-c=
+   =python-mode= comes with the HideShow module:
+   Enable: =M-x hs-minor-mode=
+   Toggle Block: =C-c @ C-c=
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1306,17 +1308,17 @@ Toggle Block: =C-c @ C-c=
 #+end_src
 
 ** Language Server Protocol
-The Language Server Protocol is how modern IDEs do what they do. It's a set of language
-specifications delivered by a server. The IDE talks to server and it gets the information it needs
-for syntax highlighting, linting, completions etc. We'll setup LSP in general, add in language
-specific language servers and add some UI enhancements to the basic LSP modules.
+    The Language Server Protocol is how modern IDEs do what they do. It's a set of language
+    specifications delivered by a server. The IDE talks to server and it gets the information it needs
+    for syntax highlighting, linting, completions etc. We'll setup LSP in general, add in language
+    specific language servers and add some UI enhancements to the basic LSP modules.
 
 *** Config
-A few specific notes about this config:
-  - We enable breadcrumbs at the top of the Emacs frame
-    - Breadcrumbs are clickable to jump around
-  - We set =C-c l= as the prefix of all keybindings for LSP
-  - We hook ivy and LSP together for improved completions
+    A few specific notes about this config:
+      - We enable breadcrumbs at the top of the Emacs frame
+         - Breadcrumbs are clickable to jump around
+      - We set =C-c l= as the prefix of all keybindings for LSP
+      - We hook ivy and LSP together for improved completions
 
 Packages:
   - [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]]  => The base Language Server Protocol mode
@@ -1362,10 +1364,10 @@ Packages:
 #+end_src
 
 *** Usage
-LSP mode adds quite a bit of functionality. See the LSP docs for more information. We'll summarize
-some useful stuff here:
+    =lsp-mode= adds quite a bit of functionality. See the LSP docs for more information. We'll summarize
+    some useful stuff here:
 **** Keybindings/emacs commands
-Here are some useful keybindings within LSP:
+      Here are some useful keybindings within LSP:
 | Key Binding              | Does what?                                           |
 | C-c l                    | Opens which-key min ibuffer with LSP commands         |
 | C-c l g g                | find all references to element at cursor             |
@@ -1377,15 +1379,15 @@ Here are some useful keybindings within LSP:
 | lsp-ivy-workspace-symbol | search workspace for a symbol                        |
 
 **** Non-keybind behaviors:
-  Select a function/variable - a light bulb shows up in the modeline that you click on for actions
-  on the selected element
+      Select a function/variable - a light bulb shows up in the modeline that you click on for actions
+      on the selected element
 
 ** Language Specific LSP Servers
-Using LSP requires that you have a "language server". Emacs can generally download and run it all by
-itself. [[https://emacs-lsp.github.io/lsp-mode/page/languages/][Servers for every language]] are available.
+  Using LSP requires that you have a "language server". Emacs can generally download and run it all by
+  itself. [[https://emacs-lsp.github.io/lsp-mode/page/languages/][Servers for every language]] are available.
 
 **** Typescript Language Server
-For Typescript,  we'll start with the [[https://github.com/emacs-typescript/typescript.el][typescript-mode]] package hooked into LSP.
+       For Typescript,  we'll start with the [[https://github.com/emacs-typescript/typescript.el][typescript-mode]] package hooked into LSP.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
 ;; Package: typescript-mode
@@ -1406,26 +1408,26 @@ For Typescript,  we'll start with the [[https://github.com/emacs-typescript/type
   (setq typescript-indent-level 2))      ; Set tab to 2 spaces (our default is 4 globally)
 #+end_src
 
-But we'll also need to setup the language server. There are currently two Typescript servers
-available we're going to use the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/][theia-ide]] server. You'll need to install it by running:
+    But we'll also need to setup the language server. There are currently two Typescript servers
+    available we're going to use the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/][theia-ide]] server. You'll need to install it by running:
 #+begin_src sh
 sudo npm i -g typescript-language-server
 sudo npm i -g typescript
 #+end_src
 
-Then whenever you want to edit Typescript code you'll need the server running. If Emacs doesn't
-start it on its own you can execute with:
+    Then whenever you want to edit Typescript code you'll need the server running. If Emacs doesn't
+    start it on its own you can execute with:
 #+begin_src sh
 typescript-language-server --stdio
 #+end_src
 
 **** Python Language Server
-Python currently has 4 language servers. We're going to use the
-[[https://github.com/emacs-lsp/lsp-python-ms][Microsoft Python Language Server]].
+      Python currently has 4 language servers. We're going to use the
+      [[https://github.com/emacs-lsp/lsp-python-ms][Microsoft Python Language Server]].
 
 ***** Config
-This config can download and install the MS LSP, hook it into python-mode and it runs the server
-automatically. You don't need to run a server in the background.
+        This config can download and install the MS LSP, hook it into =python-mode= and it runs the server
+        automatically. You don't need to run a server in the background.
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
 ;; Package: lsp-python-ms
@@ -1454,12 +1456,12 @@ A few useful commands within python-mode
 
 ** LSP improvements
 **** Treemacs
-The [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] package adds a tree widget navigation frame to the left of your code that shows a
-symbol tree of you code.  It does not open by default you need to run =M-x treemacs-symbols= to
- open it up.
+      The [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] package adds a tree widget navigation frame to the left of your code that shows a
+      symbol tree of you code.  It does not open by default you need to run =M-x treemacs-symbols= to
+      open it up.
 
-You can also run treemacs itself (=M-x treemacs=) to open a frame that shows the filesystem
-tree widget.
+     You can also run treemacs itself (=M-x treemacs=) to open a frame that shows the filesystem
+     tree widget.
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1474,12 +1476,12 @@ tree widget.
 #+end_src
 
 **** Improved completions
-We will improve the completions within LSP using a few packages that do improvements where ivy
-can't.  The packages:
-  - [[https://company-mode.github.io/][company]] => completion framework
-  - [[https://github.com/sebastiencs/company-box][company-box]] => better "pop-up" box for company with LSP completion pop-ups
-  - [[https://github.com/raxod502/prescient.el][company-prescient]] => Just like prescient with ivy, it tracks frequent completions and moves them
-    to top for company
+      We will improve the completions within LSP using a few packages that do improvements where ivy
+      can't.  The packages:
+        - [[https://company-mode.github.io/][company]] => completion framework
+        - [[https://github.com/sebastiencs/company-box][company-box]] => better "pop-up" box for company with LSP completion pop-ups
+        - [[https://github.com/raxod502/prescient.el][company-prescient]] => Just like prescient with ivy, it tracks frequent completions and moves them
+          to top for company
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1518,7 +1520,7 @@ can't.  The packages:
 
 ** Language Modes
 *** JavaScript/JSON
-Javascript and JSON use the same mode:
+     Javascript and JSON use the same mode:
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1549,7 +1551,7 @@ Javascript and JSON use the same mode:
 #+end_src
 
 *** YAML
-YAML config is simple:
+     YAML config is simple:
 
 #+begin_src emacs-lisp
 ;; -----------------------------------------------------------------------------------------------
@@ -1562,7 +1564,7 @@ YAML config is simple:
 #+end_src
 
 *** Docker
-When using docker it helps to use [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]:
+     When using docker it helps to use [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]:
 
 #+begin_src emacs-lisp
 ;; -----------------------------------------------------------------------------------------------
@@ -1576,9 +1578,8 @@ When using docker it helps to use [[https://github.com/spotify/dockerfile-mode][
 #+end_src
 
 *** Markdown
-Markdown is a very common document format. Emacs, of course, has a mode for viewing/editing
-Markdown.
-     For Markdown we'll want the system =pandoc= package installed:
+    Markdown is a very common document format. Emacs, of course, has a mode for viewing/editing
+    Markdown. For Markdown we'll want the system =pandoc= package installed:
 #+begin_src sh
 sudo apt install pandoc
 #+end_src
@@ -1618,11 +1619,11 @@ sudo apt install pandoc
 (add-hook 'markdown-mode-hook 'my/markdown-mode-hook))
 #+end_src
 
-We install basic =markdown= mode and one extra: =markdown-toc=. The add-on can be used to (re)generate
-a *Table of Contents*. The keybinding for that is =C-c C-c r=.
+    We install basic =markdown= mode and one extra: =markdown-toc=. The add-on can be used to (re)generate
+    a =Table of Contents=. The keybinding for that is =C-c C-c r=.
 ** Improved code checking/linting for Python
-The syntax checker in python-mode is pretty basic. We'll add the [[https://www.flycheck.org/en/latest/][flycheck]] package for better syntax
-checking:
+   The syntax checker in =python-mode= is pretty basic. We'll add the [[https://www.flycheck.org/en/latest/][flycheck]] package for better syntax
+   checking:
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1636,19 +1637,19 @@ checking:
 (add-hook 'python-mode-hook 'flycheck-mode)              ; add it to python-mode
 #+end_src
 
-This can be added to other languages easily.
+    This can be added to other languages easily.
 
-You can review the flycheck setup by running =M-x flycheck-verify-setup=.
+    You can review the flycheck setup by running =M-x flycheck-verify-setup=.
 
 ** Python Virtual Env
-Python 3 projects without virtualenv are pretty useless. We'll use [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] to allow Emacs to take
-advantage of virtualenv.  Once installed you need to activate/de-activate the pyvenv in emacs just
-like you do in bash using:
-  - =M-x pyvenv-activate=
-  - =M-x pyvenv-deactivate=
+    Python 3 projects without virtualenv are pretty useless. We'll use [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] to allow Emacs to take
+    advantage of virtualenv.  Once installed you need to activate/de-activate the pyvenv in emacs just
+    like you do in bash using:
+      - =M-x pyvenv-activate=
+      - =M-x pyvenv-deactivate=
 
 *** Config
-Pyvenv is a simple config:
+     Pyvenv is a simple config:
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1666,40 +1667,40 @@ Pyvenv is a simple config:
 #+end_src
 
 ** Using .dir-locals.el with projectile and python-mode
-We do a lot of Python projects and there are some things that vary from project to project that we
-want Emacs to be aware of and we don't want to re-type it every time we open a file. Projectile
-automatically applies the contents found in the file =.dir-locals.el= in the project root on project
-switch. We can take advantage of this =.dir-locals.el= behavior to solve some things for us.
+   We do a lot of Python projects and there are some things that vary from project to project that we
+   want Emacs to be aware of and we don't want to re-type it every time we open a file. =projectile=
+   automatically applies the contents found in the file =.dir-locals.el= in the project root on project
+   switch. We can take advantage of this =.dir-locals.el= behavior to solve some things for us.
 
 *** Project Specific PYTHONPATH
-Emacs is unaware of PYTHONPATH by default. If you run =M-x getenv= PYTHONPATH does not show
-up. Unfortunately, this tools like flycheck depend on PYTHONPATH for following imports. Needing to
-run =M-x setenv= every time you switch projects is painful. Therefore, we will add some Lisp to the
-=.dir-locals.el= file to do this for us every time we switch a project.
+     Emacs is unaware of =PYTHONPATH= by default. If you run =M-x getenv= PYTHONPATH does not show
+     up. Unfortunately, tools like =flycheck= depend on PYTHONPATH for following imports. Needing to
+     run =M-x setenv= every time you switch projects is painful. Therefore, we will add some Lisp to the
+     =.dir-locals.el= file to do this for us every time we switch a project.
 
 *** Virtual Environment Activation
-Since we utilized virtual environments on our projects we need to activate pyvenv in Emacs for it to
-be aware of and utilize the correct virtual environment. This is a manual process normally. We will
-add some Lisp to the =.dir-locals.el= file to automatically activate an environment on project switch.
+     Since we utilized virtual environments on our projects we need to activate =pyvenv= in Emacs for it to
+     be aware of and utilize the correct virtual environment. This is a manual process normally. We will
+     add some Lisp to the =.dir-locals.el= file to automatically activate an environment on project switch.
 
 *** Test Framework
-If you run the command =M-x projectile-test-project= it will attempt to run unit testing on your
-enabled project. However, by default, it expects the Python unittest module to be the framework and
-executes =python -m unittest discover=. If you are using something else (e.g. =pytest=) you must
-change the pre-computed default unittest command every time you try to do the tests this way. We
-will add some Lisp to the =.dir-locals.el= file to automatically set the correct unittest framework.
+    If you run the command =M-x projectile-test-project= it will attempt to run unit testing on your
+    enabled project. However, by default, it expects the Python unittest module to be the framework and
+    executes =python -m unittest discover=. If you are using something else (e.g. =pytest=) you must
+    change the pre-computed default unittest command every time you try to do the tests this way. We
+    will add some Lisp to the =.dir-locals.el= file to automatically set the correct unittest framework.
 
 *** Setting pylintrc
-If flycheck is setup to use pylint (which it should be), it will use =$HOME/.pylintrc= to drive the
-pylint behavior. If you want a per-project pylintrc you would need to change this manually.
+     If =flycheck= is setup to use =pylint= (which it should be), it will use =$HOME/.pylintrc= to drive the
+     pylint behavior. If you want a per-project pylintrc you would need to change this manually.
 
 *** Config
-You will need to do this for each repo that contains a virtual environment. Create a file in the
-project root =.dir-locals.el= with contents that looks like the following (NOTE: You'll need to set
-the paths correctly for your project(s)). Each piece is optional. Remove pieces you do not need or
-want.
+    You will need to do this for each repo that contains a virtual environment. Create a file in the
+    project root =.dir-locals.el= with contents that looks like the following (NOTE: You'll need to set
+    the paths correctly for your project(s)). Each piece is optional. Remove pieces you do not need or
+    want.
 
-My example is for a project called =Pluto= localed in =$HOME/src/git=:
+    My example is for a project called =Pluto= localed in =$HOME/src/git=:
 
 #+begin_src
 ;; When python-mode fires automatically activate the defined environment and set the defined PYTHONPATH
@@ -1716,16 +1717,16 @@ My example is for a project called =Pluto= localed in =$HOME/src/git=:
 #+end_src
 
 ** White space management
-Extraneous white space is bad. We'll use the [[https://github.com/glasserc/ethan-wspace][ethan-wspace]] package for removing extraneous white
-space.  We bind it to both text and programming modes. It is a passive module it requires invocation
-of the command:
+    Extraneous white space is bad. We'll use the [[https://github.com/glasserc/ethan-wspace][ethan-wspace]] package for removing extraneous white
+    space.  We bind it to both text and programming modes. It is a passive module it requires invocation
+    of the command:
 
-  =M-x ethan-wspace-clean-all-modes=
+     =M-x ethan-wspace-clean-all-modes=
 
-We'll bind that command in the keybinding section to make it easy.
+    We'll bind that command in the keybinding section to make it easy.
 
 **** Config
-Configuration for Ethan-wspace:
+       Configuration for =ethan-wspace=:
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -1743,65 +1744,65 @@ Configuration for Ethan-wspace:
 #+end_src
 
 * TODO Controlling Buffer Placement
-TODO: Need to re-watch this video. Got stopped part way through and didn't finish
+  TODO: Need to re-watch this video. Got stopped part way through and didn't finish
 
-When you are running Emacs with multiple open buffers, new buffers being opened may go to
-unexepcted/undesired locations. We can setup Emacs to control new buffer creation. We will use
-Emacs' =display-buffer= command to control buffer placement.
+  When you are running Emacs with multiple open buffers, new buffers being opened may go to
+  unexepcted/undesired locations. We can setup Emacs to control new buffer creation. We will use
+  Emacs' =display-buffer= command to control buffer placement.
 
-As an example, if we run =magit-status= or view =flycheck-list-errors= results we might want to force
- it open in a new buffer, split current buffer, or open in another open buffer. We might also want to
-control the size of the resultant buffer(s).
+  As an example, if we run =magit-status= or view =flycheck-list-errors= results we might want to force
+  it open in a new buffer, split current buffer, or open in another open buffer. We might also want to
+  control the size of the resultant buffer(s).
 
 ** Basic use of display-buffer
-Some quick examples. If you run either of the following, it will open a new buffer by splitting
-screen horizontally and the new window will open in the bottom half.  The first command opens Emacs'
-=*scratch*= buffer, the 2nd a completely new buffer called =Test!=.
+  Some quick examples. If you run either of the following, it will open a new buffer by splitting
+  screen horizontally and the new window will open in the bottom half.  The first command opens Emacs'
+  =*scratch*= buffer, the 2nd a completely new buffer called =Test!=.
 #+begin_src
 (display-buffer (get-buffer-create "scratch"))
 (display-buffer (get-buffer-create "Test!"))
 #+end_src
 
 ** Using display-buffer "action functions"
-An "action function" tells display buffer how to control buffer creation. The signature is:
+   An "action function" tells display buffer how to control buffer creation. The signature is:
 #+begin_src
 (display-buffer-same-window BUFFER ALIST)
 #+end_src
-where *BUFFER* is the name of the buffer and *ALIST* is key/value pairs.
+   where *BUFFER* is the name of the buffer and *ALIST* is key/value pairs.
 
 ** Various alist keys we might want to use:
-*NOTE* in the text of the keys below, the following definitions apply:
-    - Frame = "Window to the OS".
-    - Window = "Emacs window AKA a buffer"
+   *NOTE* in the text of the keys below, the following definitions apply:
+       - Frame = "Window to the OS".
+       - Window = "Emacs window AKA a buffer"
 
 *** inhibit-same-window
-Configures whehter the currently focused window  can (or can not ) be used for a new buffer.
+    Configures whehter the currently focused window  can (or can not ) be used for a new buffer.
 | value | meaning                           |
 | nil   | the current window can be used    |
 | t     | the current window cannot be used |
 
 *** reusable-frames
-Configures whether the buffer shows up on the current frame or other open frames.
+    Configures whether the buffer shows up on the current frame or other open frames.
 | value   | meaning                                            |
 | nil     | Only consider windows on the current frame         |
 | t       | Consider windows on any frame                      |
 | visible | Consider windows on visible frames only            |
 | 0       | Consider windows on visible or "inconified" frames |
-You can also pass a frame object to restrict to only that frame.
+    You can also pass a frame object to restrict to only that frame.
 
 *** inhibit-switch-frame
-Prevents a non-current frame from being "raised". if the window is placed there if the value is "t".
+    Prevents a non-current frame from being "raised". if the window is placed there if the value is =t=.
 
 *** mode
-Restricts window selection to those displaying buffers of a certain major mode. You can pass either
-a symbol of a major mode or a lsit of symbos representing major modes:
+    Restricts window selection to those displaying buffers of a certain major mode. You can pass either
+    a symbol of a major mode or a lsit of symbos representing major modes:
 #+begin_src
 '((mode . (org-mode helpful-mode help-mode)))
 #+end_src
 
 *** window-width and window-height
-Controls whether the window width and/or height might be changed when displaying the buffer and
- how much it will be changed:
+    Controls whether the window width and/or height might be changed when displaying the buffer and
+    how much it will be changed:
 | value      | meaning                                |
 | nil        | Don't change window size               |
 | integer #  | total width or height in columns/lines |
@@ -1809,12 +1810,12 @@ Controls whether the window width and/or height might be changed when displaying
 | a function | call to determine value                |
 
 ** Emacs' default placement actions
-The default list of behaviors for Emacs 27 is found with this command:
+   The default list of behaviors for Emacs 27 is found with this command:
 #+begin src
 M-x describe-variable <RET> display-buffer-fallback-action <RET>
 #+end_src
 
-The current defaults:
+   The current defaults:
 #+begin_src
 ((display-buffer--maybe-same-window
   display-buffer-reuse-window
@@ -1824,35 +1825,35 @@ The current defaults:
   display-buffer-pop-up-frame
 #+end_src
 
-Each function is evaulted in order to determine where a new buffer gets placed.
+    Each function is evaulted in order to determine where a new buffer gets placed.
 
-*NOTE*: Do =NOT= change this variable, =EVER!=
+    *NOTE*: Do =NOT= change this variable, =EVER!=
 
-Here is what each of the default functions does out of the box:
+    Here is what each of the default functions does out of the box:
 
 *** display-buffer--maybe-same-window
-This function uses the Emacs function =same-window-p= to decide whether
- =display-buffer-same-window=  should be used for placing the window. The =same-window-p=
-function depends on a few variables to determine what it does:
-  - =same-window-buffer-names=
-  - =same-window-regexps=
+    This function uses the Emacs function =same-window-p= to decide whether
+    =display-buffer-same-window=  should be used for placing the window. The =same-window-p=
+    function depends on a few variables to determine what it does:
+      - =same-window-buffer-names=
+      - =same-window-regexps=
 
-if =same-window-p= returns =t= for the buffer, =display-buffer-same-window= will be invoked.
+    If =same-window-p= returns =t= for the buffer, =display-buffer-same-window= will be invoked.
 
-*NOTE* before trying this example, make sure =display-buffers-alist= is nil otherwise the actions
-will have no effect!
+    *NOTE* before trying this example, make sure =display-buffers-alist= is nil otherwise the actions
+    will have no effect!
 
-We could force the =*scratch*= buffer to always use the same window by adding this to our config:
+    We could force the =*scratch*= buffer to always use the same window by adding this to our config:
 
 #+begin_src
 (display-buffer "scratch" '(display-buffer--maybe-same-window . ()))
 #+end_src
 
 *** display-buffer-reuse-window
-This function places the buffer in the current window if it's already displaying it. i.e. don't change
-windows if I re-load the same window.
+    This function places the buffer in the current window if it's already displaying it. i.e. don't change
+    windows if I re-load the same window.
 
-Example:
+    Example:
 #+begin_src
 ; this puts it in the same window
 (display-buffer "scratch"
@@ -1864,14 +1865,14 @@ Example:
 #+end_src
 
 *** display-buffer--maybe-pop-up-frame-or-window
-Creates a =pop-up frame= or window depending on whether =pop-up-frames= or =pop-up-windows= is
-non nil respectively. The default for =pop-up-windows= is =t=. This causes many windows to pop up in
-a separate window.
+    Creates a =pop-up frame= or window depending on whether =pop-up-frames= or =pop-up-windows= is
+    non nil respectively. The default for =pop-up-windows= is =t=. This causes many windows to pop up in
+    a separate window.
 
-- =display-buffer-pop-up-frame= is called when =pop-up-frames= is non-nil.
-- =display-buffer-pop-up-window= is called when =pop-up-windows= is non-nil.
+       - =display-buffer-pop-up-frame= is called when =pop-up-frames= is non-nil.
+       - =display-buffer-pop-up-window= is called when =pop-up-windows= is non-nil.
 
-Example, this will pop-up a new window by default.
+    Example, this will pop-up a new window by default.
 #+begin_src
 (display-buffer "scratch"
                 '(display-buffer--maybe-pop-up-frame-or-window . ()))
@@ -1880,32 +1881,32 @@ Example, this will pop-up a new window by default.
 However if we run =(setq pop-up-windows nil)= before we run that it will use the same window.
 
 *** display-buffer-in-previous-window
-Attempts to place the new buffer in whichever VISIBLE window it was previously open in. The rules it
-follows are:
-  - Use the window specified by any =previous-window= alist entry, provided it is NOT the selected
-    window.
-  - Use a window that showed the buffer before, provided it is not the selected window
-  - Use the selected window if it is either specified by a =previous-window= alist entry or showed before.
+    Attempts to place the new buffer in whichever VISIBLE window it was previously open in. The rules it
+    follows are:
+       - Use the window specified by any =previous-window= alist entry, provided it is NOT the selected
+         window.
+      - Use a window that showed the buffer before, provided it is not the selected window
+      - Use the selected window if it is either specified by a =previous-window= alist entry or showed before.
 
-NOTE: you can combine with =inhibit-same-window= to force to NOT use a previous or same window.
+    NOTE: you can combine with =inhibit-same-window= to force to NOT use a previous or same window.
 
 *** display-buffer-use-some-window
-Find ANY usable window to place the buffer. Uses a heuristic to determine the bst window to pick.
-Skips dedicated windows, but could use something like LRU or Most-recent.
+    Find ANY usable window to place the buffer. Uses a heuristic to determine the bst window to pick.
+    Skips dedicated windows, but could use something like LRU or Most-recent.
 
-This is way down the stack - kind of a catch all.
+    This is way down the stack - kind of a catch all.
 
 *** display-buffer-pop-up-frame
-Absolute last effort. Rules prevent us from using ANY existing window. Open in a new frame.
+     Absolute last effort. Rules prevent us from using ANY existing window. Open in a new frame.
 
 ** Other placement actions
-Emacs provides other options:
+    Emacs provides other options:
 *** display-buffer-reuse-mode-window
-Re-use a window that's already showing a buffer of the same major mode as the new buffer.
-With the =mode= alist entry, you can restrict the set of major modes that apply for this.
+    Re-use a window that's already showing a buffer of the same major mode as the new buffer.
+    With the =mode= alist entry, you can restrict the set of major modes that apply for this.
 
-Example that would send ALL =helpful= mode output to an EXISTING window that is already showing
- =helpful= mode.
+    Example that would send ALL =helpful= mode output to an EXISTING window that is already showing
+    =helpful= mode.
 
 #+begin_src
 (display-buffer "helpful command: special-lispy-clone"
@@ -1913,10 +1914,10 @@ Example that would send ALL =helpful= mode output to an EXISTING window that is 
 #+end_src
 
 *** display-buffer-in-side-window
-Displays the buffer in a "side window" of the current frame. This one is particularly useful with custom
-buffer rules.
+    Displays the buffer in a "side window" of the current frame. This one is particularly useful with custom
+    buffer rules.
 
-Examples:
+    Examples:
 #+begin_src
 ;; open in side window w/o args = split horizontal and put in bottom half
 ;; could have also used (side . bottom) instead of () argument
@@ -1943,31 +1944,31 @@ Examples:
 #+end_src
 
 *** display-buffer-at-bottom
-Use to force display to ALWAYS be on the bottom. Could use =display-buffer-in-side-window=
-to do the same thing.
-Example:
+     Use to force display to ALWAYS be on the bottom. Could use =display-buffer-in-side-window=
+     to do the same thing.
+     Example:
 #+begin_src
 (display-buffer "scratch"
                 '(display-buffer-at-bottom . ()))
 #+end_src
 
 *** display-buffer-no-window
-Never display the buffer in a window. This requires that =allow-no-window= option to be set to =t=.
+    Never display the buffer in a window. This requires that =allow-no-window= option to be set to =t=.
 
-Example:
+    Example:
 #+begin_src
 (dislay-buffer "scratch"
                '(display-buffer-no-window . ((allow-no-window . t))))
 #+end_src
 *** and more...
-There are more, see the Buffer Display Action Functions section of the Emacs Lisp Manual.
+    There are more, see the Buffer Display Action Functions section of the Emacs Lisp Manual.
 ** Overriding Default behaviors
-We cannot change the =display-buffer-fallback-action= variable. Instead we will  change the
-user-customizable variable =display-buffer-base-action=.
+    We cannot change the =display-buffer-fallback-action= variable. Instead we will  change the
+    user-customizable variable =display-buffer-base-action=.
 
-We are going to change the behavior as follows:
-  - Prefer to re-use a buffer rather than opening a new buffer (by re-ordering the default list).
-  - Use the prevous window for "helpful" windows.
+    We are going to change the behavior as follows:
+      - Prefer to re-use a buffer rather than opening a new buffer (by re-ordering the default list).
+      - Use the prevous window for "helpful" windows.
 #+begin_src emacs-lisp
 (setq display-buffer-base-action
   '((display-buffer-reuse-window
@@ -1977,26 +1978,26 @@ We are going to change the behavior as follows:
     . ((mode . (helpful-mode help-mode)))))
 #+end_src
 
-Now if we keep a helpful window open it will keep re-using the same window every time we use a
-=helpful= or =help= command.
+    Now if we keep a helpful window open it will keep re-using the same window every time we use a
+    =helpful= or =help= command.
 
-A future System Crafters video should show us how to:
-- force flycheck to always open on right
-- force helpful to always open on right
+    A future System Crafters video should show us how to:
+      - force flycheck to always open on right
+      - force helpful to always open on right
 
 * Arbitrary Text Scaling
-Sometimes you want to adjust text font on the fly from it's current size (e.g. pair programming,
-screen sharing).  We'll use a package called [[https://github.com/abo-abo/hydra][Hydra]] to achieve this.
+ Sometimes you want to adjust text font on the fly from it's current size (e.g. pair programming,
+ screen sharing).  We'll use a package called [[https://github.com/abo-abo/hydra][Hydra]] to achieve this.
 
-Hydra work by:
-  - Defining a key prefix that triggers a "rule"
-  - Once the rule is triggered, new keys are define for taking actions and a key defined for
-    "ending" the rule
+ Hydra work by:
+   - Defining a key prefix that triggers a "rule"
+   - Once the rule is triggered, new keys are define for taking actions and a key defined for
+     "ending" the rule
 
-The single rule we're defining is:
-   - Press =F2= to start the =text-scale= rule.
-   - Use the =j= and =k= (either can be pressed as many times as you like) to scale text in/out
-   - Use the =f= key to exit the =text-scale= function
+ The single rule we're defining is:
+    - Press =F2= to start the =text-scale= rule.
+    - Use the =j= and =k= (either can be pressed as many times as you like) to scale text in/out
+    - Use the =f= key to exit the =text-scale= function
 
 #+begin_src emacs-lisp
 ;; ------------------------------------------------------------------------------------------------
@@ -2018,11 +2019,11 @@ The single rule we're defining is:
 #+end_src
 
 * Global Keybinding
-It is easy to setup key binding shortcuts at a global level. We'll set a few.
+  It is easy to setup key binding shortcuts at a global level. We'll set a few.
 
 ** Global Key binds - Config
-We have set mode-specific keybindings where it made sense. But some keybinds we want to set globally.
-I currently use a few:
+  We have set mode-specific keybindings where it made sense. But some keybinds we want to set globally.
+  I currently use a few:
 #+begin_src emacs-lisp
 ;; Global Key Bindings
 (global-set-key (kbd "M-g") 'goto-line)
@@ -2030,10 +2031,10 @@ I currently use a few:
 #+end_src
 
 * Summary of Keybinds used/defined above
-We have covered MANY key bindings - mode specific and global. We'll summarize them here.
+  We have covered MANY key bindings - mode specific and global. We'll summarize them here.
 
 ** Summary of keybinds / cheat sheet for this document
-Global Keybinds:
+   Global Keybinds:
 | Global Keybind      | Purpose                                                        |
 | M-g                 | Jump to line (prompts for line #)                              |
 | M-x                 | Invoke counsel + which-key to see available commands with help |
@@ -2044,7 +2045,7 @@ Global Keybinds:
 | M-x-doom-load-theme | Load new theme                                                 |
 | <F2>                | Test scale (j/k to scale, f to end scaling)                    |
 
-Mode specific keybinds:
+   Mode specific keybinds:
 | Mode          | Keybind                      | Purpose                                  |       |
 | Projectile    | C-c p                        | Projectile command prefix                |       |
 | Projectile    | C-c p C-h                    | projectile help                          |       |
@@ -2081,31 +2082,31 @@ Mode specific keybinds:
 | markdown-mode | C-c C-c r                    | Insert/update TOC                        |       |
 
 * General Emacs Stuff I picked up for sharing
-While watching the system crafter video series I picked up a number of general Emacs things that are
-useful. Keep in mind you can always use Emacs help, =M-x= and any "prefix" keybinds to find out more
-information about available keybindings.
+ While watching the system crafter video series I picked up a number of general Emacs things that are
+ useful. Keep in mind you can always use Emacs help, =M-x= and any "prefix" keybinds to find out more
+ information about available keybindings.
 
 ** Describe <things>
-The Emacs built in help system lets you figure out what functions/variables are, how they work
-etc. This can be useful as the help pages show available keybindings, shortcuts, variables that can
-be set, the current set value etc.
+   The Emacs built in help system lets you figure out what functions/variables are, how they work
+   etc. This can be useful as the help pages show available keybindings, shortcuts, variables that can
+   be set, the current set value etc.
 | Short | Long                  | Purpose             | Example
 | C-h f | M-x describe-function | Describe a function | C-h f ^find-file$ |
 | C-h v | M-x describe-variable | Describe a variable | C-v v doom-modeline-height |
 | C-h o | M-x describe-symbol   | Describe a symbol   | C-h o set |
 
 ** Block Code Execution of emacs-lisp
-If you have your emacs config file open (or any other emacs-lisp file) you can execute the lisp and
-it will impact the current environment. To execute the lisp place the cursor after the final
-parenthesis of a code block and press =C-x C-e=.  Example: =(use-package foo :ensure t)=
-If you place the cursor just after =)= and press =C-x C-e= it would execute the full use-package command.
-It won't work in an Org file like this example unless it is wrapped in a block_src of type emacs-lisp.
+   If you have your emacs config file open (or any other emacs-lisp file) you can execute the lisp and
+   it will impact the current environment. To execute the lisp place the cursor after the final
+   parenthesis of a code block and press =C-x C-e=.  Example: =(use-package foo :ensure t)=
+   If you place the cursor just after =)= and press =C-x C-e= it would execute the full =use-package= command.
+   It won't work in an Org file like this example unless it is wrapped in a =block_src= of type emacs-lisp.
 
-This is great way to do additions to your emacs config file and not have to restart emacs.
+   This is great way to do additions to your emacs config file and not have to restart emacs.
 
 ** Window / Frame Commands
-By default Emacs opens a single window. You can split the window horizontally/vertically as much as
-you like. The commands for managing the windows:
+   By default Emacs opens a single window. You can split the window horizontally/vertically as much as
+   you like. The commands for managing the windows:
 | M-x command name                    | keybind | action                                           |
 | split-window-below                  | C-x 2   | Split the current window horizontally            |
 | split-window-right                  | C-x 3   | Split the current window vertically              |
@@ -2120,16 +2121,16 @@ you like. The commands for managing the windows:
 | scroll-other-window                 | M-pgdn  | Scroll the other window down without focusing it |
 | scroll-other-window-down            | M-pgup  | Scroll the other window up without focusing it   |
 
-The shrink-xxx and enlarge-xxx will shrink/enlarge by one character at a time. You can however use
-the global mode setting to adjust that:
+   The shrink-xxx and enlarge-xxx will shrink/enlarge by one character at a time. You can however use
+   the global mode setting to adjust that:
   - =C-u <some number> C-x {= makes it smaller by <some number> of chars instead of by 1.
 
-If you want to swap window positions, use the [[https://github.com/lukhas/buffer-move][buffer-move]] package.
+   If you want to swap window positions, use the [[https://github.com/lukhas/buffer-move][buffer-move]] package.
 
 ** Multi platform Emacs config
-It is possible to use a single Emacs config across multiple platforms. Here is an example fragment
-provided by the System Crafters guy of setting a font-face differently per system he uses (NOTE the
-src is not marked here as emacs-lisp as I don't want it ending up in my init.el file):
+   It is possible to use a single Emacs config across multiple platforms. Here is an example fragment
+   provided by the System Crafters guy of setting a font-face differently per system he uses (NOTE the
+   src is not marked here as emacs-lisp as I don't want it ending up in my init.el file):
 #+begin_src unix-conf
 ;; Set the font face based on platform
 (pcase system-type
@@ -2152,7 +2153,7 @@ src is not marked here as emacs-lisp as I don't want it ending up in my init.el 
 #+end_src
 
 ** Basic Movement
-Keyboard based movement around a buffer:
+   Keyboard based movement around a buffer:
 | Keybind | Action                     |
 | M-f     | Move forward one word      |
 | M-b     | Move backward one word     |
@@ -2163,14 +2164,14 @@ Keyboard based movement around a buffer:
 | M-g     | Goto Line                  |
 
 ** Macros
-Emacs supports repetitive tasks being accomplished via Macros. The keybinds for Macros:
+   Emacs supports repetitive tasks being accomplished via Macros. The keybinds for Macros:
 | Keybind | Action             |
 | C-x (   | Start Macro        |
 | C-x )   | End Macro          |
 | C-x e   | Execute last macro |
 
 ** Various useful emacs keybinds
-Here is a collection of useful native emacs keybinds:
+   Here is a collection of useful native emacs keybinds:
 | Keybind      | Action                                                |
 | C-u <number> | Universal  argument - passes <number> to next command |
 | M-u          | Uppercase Word                                        |
@@ -2186,14 +2187,14 @@ Here is a collection of useful native emacs keybinds:
 | M-x ielm     | run Emacs-Lisp REPL                                   |
 
 * Save yourself from Carpal Tunnel: Remapping the CapsLock and RightCtl keys
-If you would like to save your pinky finger some it might be useful to do a keyboard swap of the
-=Caps Lock= key with the =Right Ctrl= key. This is a system wide thing, so it's not technically
-Emacs, but it is insanely useful for Emacs due to the frequency of use of the =Left Ctrl= key. You
-would be able to use the =Caps Lock= in place of =Left Ctrl= and since =Right Ctrl= is almost never
-used we give it the =Caps Lock= function in case you actually want to use =Caps Lock=.
+  If you would like to save your pinky finger some it might be useful to do a keyboard swap of the
+  =Caps Lock= key with the =Right Ctrl= key. This is a system wide thing, so it's not technically
+  Emacs, but it is insanely useful for Emacs due to the frequency of use of the =Left Ctrl= key. You
+  would be able to use the =Caps Lock= in place of =Left Ctrl= and since =Right Ctrl= is almost never
+  used we give it the =Caps Lock= function in case you actually want to use =Caps Lock=.
 
-Process:
-  - Create file =$HOME/.Xmodmap= with contents:
+  Process:
+    - Create file =$HOME/.Xmodmap= with contents:
 #+begin_src conf-unix
  clear lock
  clear control
@@ -2202,46 +2203,46 @@ Process:
  add Lock = Control_R
 #+end_src
 
-   NOTE: XDM should auto-load that file on start, but if not add this to your =.xinitrc= or =.profile=.
+     NOTE: XDM should auto-load that file on start, but if not add this to your =.xinitrc= or =.profile=.
 
-  - Run:  =xmodmap ~/.Xmodmap=
+    - Run:  =xmodmap ~/.Xmodmap=
 
 * Outstanding issues and/or things to work on
-I've run into a few issues to consider/review/fix:
+  I've run into a few issues to consider/review/fix:
 
 ** Muscle memory changes to find-file
- There are a few muscle memory things I've noticed when using find-file. Remember we have replaced
- the native =find-file= with =counsel-find-file= and it has some slightly different behaviors:
-  - The up-arrow key no longer works as expected. Since we added ivy to =counsel-find-file= the
-    arrow keys are used to navigate thru the completion options. You can instead press =C-r= for
-    history - then you can use the better regex matching to find what you need than up arrow a
-    bunch of times.
+    here are a few muscle memory things I've noticed when using find-file. Remember we have replaced
+    the native =find-file= with =counsel-find-file= and it has some slightly different behaviors:
+      - The up-arrow key no longer works as expected. Since we added ivy to =counsel-find-file= the
+        arrow keys are used to navigate thru the completion options. You can instead press =C-r= for
+        history - then you can use the better regex matching to find what you need than up arrow a
+        bunch of times.
 
-  - TAB in the normal =find-file= works exactly like bash. TAB in =counsel-find-file= works the same
-    the FIRST time you press it. But the 2nd time you press TAB without changing the completion text
-    will select the current option
+      - TAB in the normal =find-file= works exactly like bash. TAB in =counsel-find-file= works the same
+        the FIRST time you press it. But the 2nd time you press TAB without changing the completion text
+        will select the current option
 
-  - The BACKSPACE key now deletes by word not by character on directories. So it works like =cd ..=
-    not removing just a char
+      - The BACKSPACE key now deletes by word not by character on directories. So it works like =cd ..=
+        not removing just a char
 
 ** Pylint Import Errors
-Flycheck or LSP (not sure which) still thinks imports cross repositories are unresolved even after
-setting PYTHONPATH. Launching emacs from bash with PYTHONPATH and venv set doesn't fix this.
+   =flycheck= or =lsp-mode= (not sure which) still thinks imports cross repositories are unresolved even after
+   setting PYTHONPATH. Launching emacs from bash with PYTHONPATH and venv set doesn't fix this.
 
 ** Safe dir-locals
-When you setup =.dir-locals.el= in a directory and Emacs opens files in that directory it will offer
-to execute the content. It doesn't do it automatically because it may not be safe (think
-=.dir-locals.el= in a git repo). You do a git pull and it might pull down arbitrary code. Your options
-are =Yes (y), No (n) or Yes and remember future runs (!)=.
+   When you setup =.dir-locals.el= in a directory and Emacs opens files in that directory it will offer
+   to execute the content. It doesn't do it automatically because it may not be safe (think
+   =.dir-locals.el= in a git repo). You do a git pull and it might pull down arbitrary code. Your options
+   are =Yes (y), No (n) or Yes and remember future runs (!)=.
 
-If you choose the remember future run option =!= it will copy the =.dir-locals.el= content to your
-emacs init file (=$HOME/.emacs.d/init.el=).  For example if the content of =.dir-locals.el= contained:
+  If you choose the remember future run option =!= it will copy the =.dir-locals.el= content to your
+  emacs init file (=$HOME/.emacs.d/init.el=).  For example if the content of =.dir-locals.el= contained:
 #+begin_src
     ((eval progn
            (setenv "PYTHONPATH" "~/src/git/;~/src/git/project"))))
 #+end_src
 
-Then the following content would be added to =$HOME/.emacs.d/init.el=:
+  Then the following content would be added to =$HOME/.emacs.d/init.el=:
 
 #+begin_src
    '(safe-local-variable-values
@@ -2250,6 +2251,6 @@ Then the following content would be added to =$HOME/.emacs.d/init.el=:
              (setenv "PYTHONPATH" "~/src/git/;~/src/git/project"))))))
 #+end_src
 
-If you are using org-babel's tangle function that can cause problems. To avoid that problem then add
-that content to your tangling so it always shows up and you don't keep getting re-asked about the
-the =.dir-locals= content.
+   If you are using org-babel's tangle function that can cause problems. To avoid that problem then add
+   that content to your tangling so it always shows up and you don't keep getting re-asked about the
+   the =.dir-locals= content.
